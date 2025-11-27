@@ -19,10 +19,9 @@ namespace Platform::OpenGL {
 		ShaderData m_ShaderData;
 		std::unordered_map<std::string, int> m_UniformCache;
 
-		bool ParseShader(const std::string& shader_name, const std::string& shader_path);
-		bool CompileShader();
-
-		int GetCachedUniformLocation(const std::string& uniform_name);
+		const bool ParseShader(const std::string& shader_name, const std::string& shader_path);
+		const bool CompileShader();
+		const int GetCachedUniformLocation(const std::string& uniform_name);
 
 	public:
 

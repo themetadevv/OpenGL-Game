@@ -30,19 +30,6 @@ namespace Platform::Windows {
 		m_WindowData(window_data), m_Window(nullptr), m_WindowRunning(true)
 	{
 		Initialize();
-		std::cout << "Window created for Platform Windows\n";
-	}
-
-	Core::WindowData Window::GetWindowData() const {
-		return m_WindowData;
-	}
-
-	Core::NativeWindowHandle Window::GetWindowHandle() const {
-		return Core::NativeWindowHandle(Core::NativeWindowHandle::Type::GLFW, m_Window);
-	}
-
-	bool Window::Running() const {
-		return m_WindowRunning;
 	}
 
 	void Window::OnUpdate() {

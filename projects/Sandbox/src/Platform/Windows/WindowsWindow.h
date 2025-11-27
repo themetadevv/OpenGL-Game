@@ -14,12 +14,19 @@ namespace Platform::Windows {
 	public:
 		Window(const Core::WindowData& window_data);
 
-		Core::WindowData GetWindowData() const override;
-		Core::NativeWindowHandle GetWindowHandle() const override;
-		bool Running() const override;
-
 		void ClearScreen(const glm::vec4& clear_color) const override;
-
 		void OnUpdate() override;
+
+		const Core::WindowData& GetWindowData() const override {
+			return m_WindowData;
+		}
+
+		const Core::NativeWindowHandle& GetWindowHandle() const override {
+			return Core::NativeWindowHandle(Core::NativeWindowHandle::Type::GLFW, m_Window);
+		}
+
+		const bool& Running() const override {
+			return m_WindowRunning;
+		}
 	};
 }

@@ -51,12 +51,12 @@ namespace Platform::OpenGL {
 		return true;
 	}
 
-	const void Texture2D::Bind(unsigned int tex_slot) const {
+	void Texture2D::Bind(unsigned int tex_slot) const {
 		GLCall(glActiveTexture(GL_TEXTURE0 + tex_slot));
 		GLCall(glBindTexture(GL_TEXTURE_2D, m_TextureData.ID));
 	}
 
-	const void Texture2D::Unbind() const {
+	void Texture2D::Unbind() const {
 		GLCall(glBindTexture(GL_TEXTURE_2D, 0));
 	}
 }

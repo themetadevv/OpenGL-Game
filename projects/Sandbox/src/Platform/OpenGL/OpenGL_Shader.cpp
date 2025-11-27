@@ -7,7 +7,7 @@
 #include "OpenGL_Shader.h"
 
 namespace Platform::OpenGL {
-	bool Shader::ParseShader(const std::string& shader_name, const std::string& shader_path) {
+	const bool Shader::ParseShader(const std::string& shader_name, const std::string& shader_path) {
 		std::stringstream shader_source[2];
 		bool all_shaders_section_parsed = false;
 		std::ifstream shader_file_content(shader_path);
@@ -43,7 +43,7 @@ namespace Platform::OpenGL {
 		return true;
 	}
 
-	bool Shader::CompileShader() {
+	const bool Shader::CompileShader() {
 		const char* vertex_shader_source = m_ShaderData.VertexShaderSource.c_str();
 		const char* fragment_shader_source = m_ShaderData.FragmentShaderSource.c_str();
 
@@ -59,8 +59,6 @@ namespace Platform::OpenGL {
 			return false;
 		}
 
-		std::cout << "Compiled vertex section of shader : " << m_ShaderData.Name << '\n';
-
 		GLCall(unsigned int fragment_shader_id = glCreateShader(GL_FRAGMENT_SHADER));
 		GLCall(glShaderSource(fragment_shader_id, 1, &fragment_shader_source, nullptr));
 		GLCall(glCompileShader(fragment_shader_id));
@@ -72,8 +70,6 @@ namespace Platform::OpenGL {
 			std::cout << "Failed to compile fragment section of shader : " << m_ShaderData.Name << '\n' << "Logs -> \n" << fragment_shader_compile_status_logs << '\n';
 			return false;
 		}
-
-		std::cout << "Compiled fragment section of shader : " << m_ShaderData.Name << '\n';
 
 		m_RendererID = glCreateProgram();
 		GLCall(glAttachShader(m_RendererID, vertex_shader_id));
@@ -88,15 +84,13 @@ namespace Platform::OpenGL {
 			return false;
 		}
 
-		std::cout << "Linked shader : " << m_ShaderData.Name << '\n';
-
 		GLCall(glDeleteShader(vertex_shader_id));
 		GLCall(glDeleteShader(fragment_shader_id));
 
 		return true;
 	}
 
-	int Shader::GetCachedUniformLocation(const std::string& uniform_name) {
+	const int Shader::GetCachedUniformLocation(const std::string& uniform_name) {
 		if (m_UniformCache.find(uniform_name) != m_UniformCache.end())
 			return m_UniformCache[uniform_name];
 

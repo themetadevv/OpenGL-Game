@@ -21,3 +21,13 @@
 #else
 #define PLATFORM "Unknown"
 #endif
+
+#define PLATFORM_OPENGL
+
+#ifdef PLATFORM_OPENGL
+	#define RENDERING_API_GL
+#elif PLATFORM_DX11
+	#define RENDERING_API_DX11
+#else
+#define RENDERING_API_NONE
+#endif

@@ -12,6 +12,9 @@
 #include "Platform/OpenGL/OpenGL_Shader.h"
 #include "Platform/OpenGL/OpenGL_Texture.h"
 
+#include "Platform/OpenGL/OpenGL_Renderer.h"
+#include "Core/Renderer.h"
+
 
 float vertices[] = {
 	//   pos.xy        uv.xy
@@ -36,34 +39,35 @@ int main() {
 	m_WindowData.Height = 768;
 
 	std::unique_ptr<Core::IWindow> m_Window = std::unique_ptr<Core::IWindow>(Core::IWindow::CreateWindow(m_WindowData));
+	std::unique_ptr<Core::IRenderer> m_Renderer = std::unique_ptr<Core::IRenderer>(Core::IRenderer::CreateRenderer());
 
 	Shader test_shader("TestShader", "C:/shaders/test_shader.glsl");
 	Texture2D test_texture("TestTexture", "C:/shaders/babee.png");
 	Texture2D test_texture_1("TestTexture", "C:/shaders/babee_2.png");
 
-	Buffer::VertexArray VAO;
-	VAO.Bind();
+	m_Renderer->AddVAO("test_vao", std::make_unique<Buffer::VertexArray>());
+	m_Renderer->GetVAO("test_vao")->Bind();
 
-	Buffer::VertexBuffer VBO(sizeof(float) * 4 * 4, vertices);
-	VBO.Bind();
+	m_Renderer->AddVBO("test_vbo", std::make_unique<Platform::OpenGL::Buffer::VertexBuffer>(sizeof(vertices), vertices));
+	m_Renderer->GetVBO("test_vbo")->Bind();
 
 	Buffer::VertexBufferLayout VBL;
 	VBL.Push<float>(2);
 	VBL.Push<float>(2);
 
-	VAO.AddDataToBuffer(VBO, VBL);
+	m_Renderer->GetVAO("test_vao")->AddDataToBuffer(*m_Renderer->GetVBO("test_vbo"), VBL);
+	m_Renderer->AddIBO("test_ibo", std::make_unique<Platform::OpenGL::Buffer::IndexBuffer>(sizeof(indices), indices));
 
-	Buffer::IndexBuffer IBO(6, indices);
-
-	VAO.Unbind();
-	VBO.Unbind();
-	IBO.Unbind();
+	m_Renderer->GetVAO("test_vao")->Unbind();
+	m_Renderer->GetVBO("test_vbo")->Unbind();
+	m_Renderer->GetIBO("test_ibo")->Unbind();
 
 	while (m_Window->Running()) {
-		m_Window->ClearScreen({ 0.3f, 0.3f, 0.3f, 1.0f });
+		m_Renderer->Clear({ 0.3f, 0.3f, 0.3f, 1.0f });
 
-		VAO.Bind();
-		IBO.Bind();
+		m_Renderer->GetVAO("test_vao")->Bind();
+		m_Renderer->GetIBO("test_ibo")->Bind();
+
 		test_shader.Bind();
 
 		test_shader.SetUniform1i("u_Texture0", 0);
@@ -73,7 +77,7 @@ int main() {
 		test_texture.Bind(0);
 		test_texture_1.Bind(1);
 		
-		GLCall(glDrawElements(GL_TRIANGLES, IBO.GetIndicesCount(), GL_UNSIGNED_INT, nullptr));
+		m_Renderer->DrawIndexed(m_Renderer->GetIBO("test_ibo")->GetIndicesCount());
 
 		m_Window->OnUpdate();
 	}

@@ -20,8 +20,8 @@ namespace Platform::OpenGL {
 		Texture2D(const std::string& texture_name, const std::string& texture_path);
 		~Texture2D();
 
-		const void Bind(unsigned int tex_slot) const;
-		const void Unbind() const;
+		void Bind(unsigned int tex_slot) const;
+		void Unbind() const;
 
 		inline const TextureData& GetTextureData() const {
 			return m_TextureData;
