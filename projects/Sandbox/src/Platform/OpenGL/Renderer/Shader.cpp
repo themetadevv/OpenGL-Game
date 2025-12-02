@@ -2,22 +2,36 @@
 #include "pch.h"
 #include "Core/Core.h"
 
-#include "OpenGL_Core.h"
+#include "Platform/OpenGL/OpenGL_Core.h"
 
-#include "OpenGL_Shader.h"
+
+#include "Shader.h"
 
 namespace Platform::OpenGL {
+	Shader::Shader(const std::string& shader_name, const std::string& shader_path) : m_RendererID(NULL) {
+		CORE_ASSERT(ParseShader(shader_name, shader_path), ("Failed to parse shader : " + shader_name + ", " + shader_path).c_str());
+		CORE_ASSERT(CompileShader(), "Failed to compile shader!");
+	}
+
+	Shader::~Shader() {
+		GLCall(glDeleteProgram(m_RendererID));
+	}
+
+
 	const bool Shader::ParseShader(const std::string& shader_name, const std::string& shader_path) {
 		std::stringstream shader_source[2];
 		bool all_shaders_section_parsed = false;
 		std::ifstream shader_file_content(shader_path);
 
 		if (!shader_file_content.is_open()) {
-			CORE_ASSERT(NULL, "Failed to open shader file!");
+			std::cout << "Failed to open shader file!" << '\n';
 			return false;
 		}
 
 		std::string line;
+
+		ShaderType m_CurrentShaderType;
+
 		m_CurrentShaderType = ShaderType::NONE;
 
 		while (getline(shader_file_content, line)) {
@@ -104,19 +118,6 @@ namespace Platform::OpenGL {
 
 		return uniform_location;
 	}
-
-	Shader::Shader(const std::string& shader_name, const std::string& shader_path) : m_RendererID(NULL) {
-		if (!ParseShader(shader_name, shader_path)) {
-			std::cout << "Failed to parse shader : " << shader_name << ", " << shader_path << '\n';
-		}
-
-		CompileShader();
-	}
-
-	Shader::~Shader() {
-		GLCall(glDeleteProgram(m_RendererID));
-	}
-
 
 	void Shader::Bind() const {
 		GLCall(glUseProgram(m_RendererID));

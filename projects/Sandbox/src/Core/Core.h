@@ -1,35 +1,44 @@
 #pragma once
 
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
+#include <GLFW/glfw3native.h>
+
 #ifdef CONFIGURATION_DEBUG
-	#define ENABLE_DEBUGGING 1
+	#define ENABLE_DEBUGGING
 #endif
 
 #ifdef ENABLE_DEBUGGING
-	#define ENABLE_ASSERT 1
-	#define ENABLE_LOGGING 1
+	#define ENABLE_ASSERT 
+	#define ENABLE_LOGGING 
 #endif
 
 #ifdef ENABLE_ASSERT
-//#include "Logger.h"
-	#define CORE_ASSERT(X, ...) if(!(X)) { __debugbreak(); }
+
+inline bool CoreCheckError(bool condition, const char* error_msg, const char* condition_name, const char* func_call_file_name, int func_call_line_no) {
+	if (!condition) {
+		std::cout << "\n[CORE ASSERT] Condition failed!\n";
+		std::cout << "Error : " << error_msg << "\n";
+		std::cout << "Condition : " << condition_name << '\n';
+		std::cout << "Line : " << func_call_line_no << '\n';
+		std::cout << "File : " << func_call_file_name << '\n';
+		std::cout << std::endl;
+
+		return false;
+	}
+
+	return true;
+}
+
+#define CORE_ASSERT(X, ...) if(!(CoreCheckError((X), __VA_ARGS__, #X, __FILE__, __LINE__))) { __debugbreak(); } 
 #else
-#define CORE_ASSERT(X)
+#define CORE_ASSERT(X) X
 #endif
 
 #ifdef PLATFORM_WINDOWS 
 	#define PLATFORM "Windows"
 #else
 #define PLATFORM "Unknown"
-#endif
-
-#define PLATFORM_OPENGL
-
-#ifdef PLATFORM_OPENGL
-	#define RENDERING_API_GL
-#elif PLATFORM_DX11
-	#define RENDERING_API_DX11
-#else
-#define RENDERING_API_NONE
 #endif
 
 #define unique(T, ...) std::make_unique<T>(__VA_ARGS__)

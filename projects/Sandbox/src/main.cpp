@@ -2,27 +2,19 @@
 
 #include "pch.h"
 #include "Core/Core.h"
-
-#include "Platform/OpenGL/OpenGL_Core.h"
-
 #include "Core/Window.h"
 
-#include "Platform/OpenGL/Buffers/VertexArray.h"
-#include "Platform/OpenGL/Buffers/IndexBuffer.h"
-#include "Platform/OpenGL/OpenGL_Shader.h"
-#include "Platform/OpenGL/OpenGL_Texture.h"
-
-#include "Platform/OpenGL/OpenGL_Renderer.h"
-#include "Core/Renderer.h"
-
+#include "Platform/OpenGL/OpenGL.h"
+#include "Game/Sprite.h"
 
 float vertices[] = {
-	//   pos.xy        uv.xy
-	-0.5f, -0.5f,      0.0f, 0.0f, // bottom-left 0 
-	 0.5f, -0.5f,      1.0f, 0.0f, // bottom-right 1
-	 0.5f,  0.5f,      1.0f, 1.0f, // top-right 2
-	-0.5f,  0.5f,      0.0f, 1.0f  // top-left 3
+	// pos.xy        uv.xy
+	100.0f, 100.0f,  0.0f, 0.0f, // bottom-left
+	300.0f, 100.0f,  1.0f, 0.0f, // bottom-right
+	300.0f, 300.0f,  1.0f, 1.0f, // top-right
+	100.0f, 300.0f,  0.0f, 1.0f  // top-left
 };
+
 
 unsigned int indices[] = {
 	0, 3, 2,
@@ -32,69 +24,52 @@ unsigned int indices[] = {
 int main() {
 	using namespace Platform::OpenGL;
 
-	std::unique_ptr<Core::IRenderer> m_Renderer = std::unique_ptr<Core::IRenderer>(Core::IRenderer::CreateRenderer());
+	std::unique_ptr<Renderer> m_Renderer = unique(Renderer);
+	//Renderer* m_Renderer = new Renderer();
+	std::unique_ptr<ResourceManager> m_ResourceManager = unique(ResourceManager);
+	//ResourceManager* m_ResourceManager = new ResourceManager();
 
 	Core::WindowData m_WindowData;
-	m_WindowData.Title  = "Platform - " + std::string(PLATFORM) + ", API - " + std::string((m_Renderer->GetAPI() == Core::RenderAPI::OPENGL) ? "OpenGL" : "DX11");
-	m_WindowData.VSync  = false;
+	m_WindowData.Title = "Platform - " + std::string(PLATFORM) + " API - OpenGL\n";
+	m_WindowData.VSync  = true;
 	m_WindowData.Width  = 1366;
 	m_WindowData.Height = 768;
 
 	std::unique_ptr<Core::IWindow> m_Window = std::unique_ptr<Core::IWindow>(Core::IWindow::CreateWindow(m_WindowData));
 	
-	Buffer::VertexBufferLayout QuadVBL;
-	QuadVBL.Push<float>(2);
-	QuadVBL.Push<float>(2);
+	m_ResourceManager->CreateResource<Shader>("QuadShader", "C:/shaders/test_shader.glsl");
+	auto QuadShader = m_ResourceManager->GetResource<Shader>("QuadShader");
 
-	m_Renderer->CreateShader("QuadShader", unique(Shader, "QuadShader", "C:/shaders/test_shader.glsl"));
-	auto QuadShader = m_Renderer->GetShader("QuadShader");
+	m_ResourceManager->CreateResource<Texture2D>("QuadTexture0", "C:/shaders/babee.png");
+	m_ResourceManager->CreateResource<Texture2D>("QuadTexture1", "C:/shaders/babee_2.png");
+	m_ResourceManager->CreateResource<Texture2D>("QuadTexture2", "C:/shaders/babee_3.png");
+	auto QuadTexture0 = m_ResourceManager->GetResource<Texture2D>("QuadTexture0");
+	auto QuadTexture1 = m_ResourceManager->GetResource<Texture2D>("QuadTexture1");
 
-	m_Renderer->CreateTexture2D("QuadTexture0", unique(Texture2D, "QuadTexture0", "C:/shaders/babee.png"));
-	auto QuadTexture0 = m_Renderer->GetTexture2D("QuadTexture0");
+	Game::Sprite* m_Sprite = new Game::Sprite(m_Renderer.get(), m_ResourceManager.get());
+	m_Sprite->SetShader(QuadShader);
+	m_Sprite->AddTexture(QuadTexture0);
+	m_Sprite->AddTexture(QuadTexture1);
+	
+	Mat4 view = Mat4(1.0f);
+	view = glm::translate(view, Vector3(300.0f, 150.0f, 0.0f));
 
-	m_Renderer->CreateTexture2D("QuadTexture1", unique(Texture2D, "QuadTexture1", "C:/shaders/babee_2.png"));
-	auto QuadTexture1 = m_Renderer->GetTexture2D("QuadTexture1");
-
-	m_Renderer->CreateTexture2D("QuadTexture2", unique(Texture2D, "QuadTexture2", "C:/shaders/babee_3.png"));
-	auto QuadTexture2 = m_Renderer->GetTexture2D("QuadTexture2");
-
-	m_Renderer->CreateVAO("QuadVAO", unique(Buffer::VertexArray));
-	auto QuadVAO = m_Renderer->GetVAO("QuadVAO");
-	QuadVAO->Bind();
-
-	m_Renderer->CreateVBO("QuadVBO", unique(Buffer::VertexBuffer, sizeof(vertices), vertices));
-	auto QuadVBO = m_Renderer->GetVBO("QuadVBO");
-	QuadVBO->Bind();
-
-	QuadVAO->AddDataToBuffer(*QuadVBO, QuadVBL);
-
-	m_Renderer->CreateIBO("QuadIBO", unique(Buffer::IndexBuffer, 6u, indices));
-	auto QuadIBO = m_Renderer->GetIBO("QuadIBO");
-
-	QuadVAO->Unbind();
-	QuadVBO->Unbind();
-	QuadIBO->Unbind();
+	Mat4 projection = Mat4(1.0f);
+	projection = glm::ortho(0.0f, 1366.0f, 0.0f, 768.0f, -1.0f, 1.0f);
+	
+	float x_val = 400.0f;
 
 	while (m_Window->Running()) {
 		m_Renderer->Clear({ 0.3f, 0.3f, 0.3f, 1.0f });
 
-		QuadVAO->Bind();
-		QuadIBO->Bind();
+		//x_val -= 1.0f;
 
-		QuadShader->Bind();
+		m_Sprite->SetPosition({ x_val, 50.0f });
+		m_Sprite->SetRotation(0.0f);
+		m_Sprite->SetSize({ 500.0f, 350.0f });
 
-		QuadTexture0->Bind(0);
-		QuadShader->SetUniform1i("u_Texture0", 0);
-
-		QuadTexture1->Bind(1);
-		QuadShader->SetUniform1i("u_Texture1", 1);
-
-		QuadShader->SetUniform1f("u_MixAmount", 0.7f);
-
-		m_Renderer->DrawIndexed(QuadIBO->GetIndicesCount());
+		m_Sprite->Draw(view, projection);
 
 		m_Window->OnUpdate();
 	}
-
-	m_Renderer->Shutdown();
 }

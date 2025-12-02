@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Platform/OpenGL/Maths.h"
+
 namespace Platform::OpenGL {
 	enum struct ShaderType {
 		NONE = -1,
@@ -15,7 +17,6 @@ namespace Platform::OpenGL {
 	class Shader {
 	private:
 		unsigned int m_RendererID;
-		ShaderType m_CurrentShaderType;
 		ShaderData m_ShaderData;
 		std::unordered_map<std::string, int> m_UniformCache;
 

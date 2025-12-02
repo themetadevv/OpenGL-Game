@@ -26,15 +26,16 @@ const char* GLGetErrorEnumName(GLenum error_code) {
 	}
 }
 
-bool GLCheckError(const char* func_name, unsigned int func_call_line_no, const char* in_file) {
+bool GLCheckError(const char* func_name, unsigned int func_call_file_name, const char* in_file) {
 	while (GLenum error_code = glGetError()) {
 		std::cout << std::endl;
 		std::cout << "OpenGL Error Occured!\n";
 		std::cout << "Enum : " << GLGetErrorEnumName(error_code) << '\n';
 		std::cout << "Function : " << func_name << '\n';
-		std::cout << "Line : " << func_call_line_no << '\n';
+		std::cout << "Line : " << func_call_file_name << '\n';
 		std::cout << "File : " << in_file << '\n';
 		std::cout << std::endl;
+
 		return false;
 	}
 

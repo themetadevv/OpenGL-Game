@@ -6,13 +6,13 @@
 
 #include "stb_image/stb_image.h"
 
-#include "OpenGL_Texture.h"
+#include "Texture2D.h"
 
 namespace Platform::OpenGL {
 	Texture2D::Texture2D(const std::string& texture_name, const std::string& texture_path) 
 		: m_RendererID(0), m_LocalTexBuffer(nullptr)
 	{
-		CORE_ASSERT(ParseTexture(texture_name, texture_path));
+		CORE_ASSERT(ParseTexture(texture_name, texture_path), "Failed to Parse Texture");
 	}
 
 	Texture2D::~Texture2D() {

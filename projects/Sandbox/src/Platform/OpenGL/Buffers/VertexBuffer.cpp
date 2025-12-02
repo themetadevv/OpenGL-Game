@@ -1,10 +1,8 @@
 
 #include "pch.h"
-#include "Core/Core.h"
+#include "VertexBuffer.h"
 
 #include "Platform/OpenGL/OpenGL_Core.h"
-
-#include "VertexBuffer.h"
 
 namespace Platform::OpenGL::Buffer {
 
