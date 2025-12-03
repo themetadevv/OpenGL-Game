@@ -17,6 +17,8 @@ namespace Platform::OpenGL::Buffer {
 	}
 
 	void VertexArray::AddDataToBuffer(const VertexBuffer& vbo, const VertexBufferLayout& vbl) {
+		Bind();
+		vbo.Bind();
 		const auto& vbo_layout_elements = vbl.GetVertexBufferLayoutElement();
 
 		unsigned int offset = 0;

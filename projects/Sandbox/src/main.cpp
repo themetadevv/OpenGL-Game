@@ -5,16 +5,16 @@
 #include "Core/Window.h"
 
 #include "Platform/OpenGL/OpenGL.h"
+
+#include "Game/Game.h"
 #include "Game/Sprite.h"
 
 float vertices[] = {
-	// pos.xy        uv.xy
-	100.0f, 100.0f,  0.0f, 0.0f, // bottom-left
-	300.0f, 100.0f,  1.0f, 0.0f, // bottom-right
-	300.0f, 300.0f,  1.0f, 1.0f, // top-right
-	100.0f, 300.0f,  0.0f, 1.0f  // top-left
+			0.0f, 0.0f, 0.0f, 0.0f,
+			1.0f, 0.0f, 1.0f, 0.0f,
+			1.0f, 1.0f, 1.0f, 1.0f,
+			0.0f, 1.0f, 0.0f, 1.0f
 };
-
 
 unsigned int indices[] = {
 	0, 3, 2,
@@ -37,19 +37,20 @@ int main() {
 
 	std::unique_ptr<Core::IWindow> m_Window = std::unique_ptr<Core::IWindow>(Core::IWindow::CreateWindow(m_WindowData));
 	
-	m_ResourceManager->CreateResource<Shader>("QuadShader", "C:/shaders/test_shader.glsl");
-	auto QuadShader = m_ResourceManager->GetResource<Shader>("QuadShader");
+	m_ResourceManager->CreateResource<Shader>("SpriteShader", "C:/shaders/sprite_shader.glsl");
+	auto SpriteShader = m_ResourceManager->GetResource<Shader>("SpriteShader");
 
 	m_ResourceManager->CreateResource<Texture2D>("QuadTexture0", "C:/shaders/babee.png");
 	m_ResourceManager->CreateResource<Texture2D>("QuadTexture1", "C:/shaders/babee_2.png");
 	m_ResourceManager->CreateResource<Texture2D>("QuadTexture2", "C:/shaders/babee_3.png");
 	auto QuadTexture0 = m_ResourceManager->GetResource<Texture2D>("QuadTexture0");
 	auto QuadTexture1 = m_ResourceManager->GetResource<Texture2D>("QuadTexture1");
+	auto QuadTexture2 = m_ResourceManager->GetResource<Texture2D>("QuadTexture2");
 
-	Game::Sprite* m_Sprite = new Game::Sprite(m_Renderer.get(), m_ResourceManager.get());
-	m_Sprite->SetShader(QuadShader);
-	m_Sprite->AddTexture(QuadTexture0);
-	m_Sprite->AddTexture(QuadTexture1);
+
+	Game::Sprite* m_Sprite = new Game::Sprite("Test", m_Renderer.get(), m_ResourceManager.get());
+	m_Sprite->SetShader(SpriteShader);
+	m_Sprite->SetTexture(QuadTexture2);
 	
 	Mat4 view = Mat4(1.0f);
 	view = glm::translate(view, Vector3(300.0f, 150.0f, 0.0f));
@@ -62,11 +63,12 @@ int main() {
 	while (m_Window->Running()) {
 		m_Renderer->Clear({ 0.3f, 0.3f, 0.3f, 1.0f });
 
-		//x_val -= 1.0f;
+		x_val -= 1.0f;
 
 		m_Sprite->SetPosition({ x_val, 50.0f });
 		m_Sprite->SetRotation(0.0f);
-		m_Sprite->SetSize({ 500.0f, 350.0f });
+		m_Sprite->SetSize({ 347.0f, 484.0f });
+		m_Sprite->SetColor(Vector3(1.f, 0.0f, 0.0f));
 
 		m_Sprite->Draw(view, projection);
 

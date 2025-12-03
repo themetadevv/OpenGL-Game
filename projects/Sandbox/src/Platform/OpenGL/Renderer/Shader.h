@@ -2,6 +2,17 @@
 
 #include "Platform/OpenGL/Maths.h"
 
+namespace ShaderConst {
+	constexpr char UMVP[] = "u_MVP";
+	constexpr char UCOLOR[] = "u_Color";
+	constexpr char UTEX[] = "u_Texture";
+	constexpr char UTEX_ATTACHED[] = "u_TextureAttached";
+
+	constexpr char QUAD_VAO[] = "QuadVAO";
+	constexpr char QUAD_VBO[] = "QuadVBO";
+	constexpr char QUAD_IBO[] = "QuadIBO";
+}
+
 namespace Platform::OpenGL {
 	enum struct ShaderType {
 		NONE = -1,
@@ -42,6 +53,7 @@ namespace Platform::OpenGL {
 		void SetUniform3f(const std::string& name, const glm::vec3& value);
 		void SetUniform4f(const std::string& name, const glm::vec4& value);
 		void SetUniformMat4(const std::string& name, const glm::mat4x4& value);
+
 
 	};
 }

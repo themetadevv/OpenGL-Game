@@ -35,12 +35,12 @@ namespace Platform::OpenGL {
 		m_CurrentShaderType = ShaderType::NONE;
 
 		while (getline(shader_file_content, line)) {
-			if (line.find("//SECTION_VERTEX") != std::string::npos) {
+			if (line.find("// VERTEX") != std::string::npos) {
 				m_CurrentShaderType = ShaderType::VERTEX;
 				continue;
 			}
 
-			if (line.find("//SECTION_FRAGMENT") != std::string::npos) {
+			if (line.find("// FRAGMENT") != std::string::npos) {
 				m_CurrentShaderType = ShaderType::FRAGMENT;
 				continue;
 			}

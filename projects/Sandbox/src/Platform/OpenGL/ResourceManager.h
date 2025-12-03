@@ -7,12 +7,12 @@
 #include "Platform/OpenGL/Renderer/Shader.h"
 #include "Platform/OpenGL/Renderer/Texture2D.h"
 
-
 namespace Platform::OpenGL {
 	class ResourceManager {
 	private:
-		std::unordered_map<std::string, std::unique_ptr<Shader>>               m_Shaders;
-		std::unordered_map<std::string, std::unique_ptr<Texture2D>>	           m_Textures2D;
+		std::unordered_map<std::string, std::unique_ptr<Shader>>    m_Shaders;
+		std::unordered_map<std::string, std::unique_ptr<Texture2D>> m_Textures2D;
+
 		std::unordered_map<std::string, std::unique_ptr<Buffer::VertexBuffer>> m_VertexBuffers;
 		std::unordered_map<std::string, std::unique_ptr<Buffer::IndexBuffer>>  m_IndexBuffers;
 		std::unordered_map<std::string, std::unique_ptr<Buffer::VertexArray>>  m_VertexArray;

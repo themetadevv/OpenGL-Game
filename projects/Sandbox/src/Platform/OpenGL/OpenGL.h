@@ -1,8 +1,5 @@
 #pragma once
 
-#define UMVP "u_MVP"
-#define UTEX "u_Texture"
-
 #include "Platform/OpenGL/OpenGL_Core.h"
 
 #include "Platform/OpenGL/Buffers/VertexArray.h"

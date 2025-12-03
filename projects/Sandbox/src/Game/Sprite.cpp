@@ -1,14 +1,20 @@
 
 #include "pch.h"
 
+#include "Platform/OpenGL/OpenGL.h"
 
-
+#include "Game.h"
 #include "Sprite.h"
 
 namespace Game {
-	Sprite::Sprite(Platform::OpenGL::Renderer* renderer, Platform::OpenGL::ResourceManager* resource_manager) :
-		m_Renderer(renderer), m_ResourceManager(resource_manager), m_Shader(nullptr)
+	Sprite::Sprite(const std::string& name, Platform::OpenGL::Renderer* renderer, Platform::OpenGL::ResourceManager* resource_manager) :
+		m_Renderer(renderer), m_ResourceManager(resource_manager)
 	{
+		m_SpriteData.Name = name;
+		m_SpriteData.SpriteShader = nullptr;
+		m_SpriteData.SpriteTexture = nullptr;
+		m_SpriteData.Color = Vector3(1.0f);
+
 		float vertices[] = {
 			0.0f, 0.0f, 0.0f, 0.0f,
 			1.0f, 0.0f, 1.0f, 0.0f,
@@ -25,59 +31,75 @@ namespace Game {
 		QuadVBL.Push<float>(2);
 		QuadVBL.Push<float>(2);
 
-		m_ResourceManager->CreateResource<Platform::OpenGL::Buffer::VertexArray>("SpriteVAO");
-		m_VAO = m_ResourceManager->GetResource<Platform::OpenGL::Buffer::VertexArray>("SpriteVAO");
-		m_VAO->Bind();
+		m_ResourceManager->CreateResource<Platform::OpenGL::Buffer::VertexArray>(ShaderConst::QUAD_VAO);
+		m_ResourceManager->CreateResource<Platform::OpenGL::Buffer::VertexBuffer>(ShaderConst::QUAD_VBO, sizeof(float) * 4 * 4, vertices);
 
-		m_ResourceManager->CreateResource<Platform::OpenGL::Buffer::VertexBuffer>("SpriteVBO", sizeof(float) * 4 * 4, vertices);
-		m_VBO = m_ResourceManager->GetResource<Platform::OpenGL::Buffer::VertexBuffer>("SpriteVBO");
-		m_VBO->Bind();	
-		
-		m_VAO->AddDataToBuffer(*m_VBO, QuadVBL);
+		m_ResourceManager->GetResource<Platform::OpenGL::Buffer::VertexArray>(ShaderConst::QUAD_VAO)->AddDataToBuffer(
+			*m_ResourceManager->GetResource<Platform::OpenGL::Buffer::VertexBuffer>(ShaderConst::QUAD_VBO), 
+			QuadVBL
+		);
 
-		m_ResourceManager->CreateResource<Platform::OpenGL::Buffer::IndexBuffer>("SpriteIBO", 3U * 2U, indices);
-		m_IBO = m_ResourceManager->GetResource<Platform::OpenGL::Buffer::IndexBuffer>("SpriteIBO");
-		
-		m_VAO->Unbind();
-		m_VBO->Unbind();
+		m_ResourceManager->CreateResource<Platform::OpenGL::Buffer::IndexBuffer>(ShaderConst::QUAD_IBO, 3U * 2U, indices);
+
+		m_ResourceManager->GetResource<Platform::OpenGL::Buffer::VertexArray>(ShaderConst::QUAD_VAO)->Unbind();
+		m_ResourceManager->GetResource<Platform::OpenGL::Buffer::VertexBuffer>(ShaderConst::QUAD_VBO)->Unbind();
 	}
 
-	void Sprite::SetShader(Platform::OpenGL::Shader* shader) {
-		m_Shader = shader;
+	bool Sprite::SetShader(Platform::OpenGL::Shader* shader) {
+		if (m_SpriteData.SpriteShader != shader) {
+			m_SpriteData.SpriteShader = shader;
+			return true;
+		}
+		
+		std::cout << "Same Shader was Set Again!\n";
+		return false;
+	}
+
+	bool Sprite::SetTexture(Platform::OpenGL::Texture2D* texture) {
+		if (m_SpriteData.SpriteTexture != texture) {
+			m_SpriteData.SpriteTexture = texture;
+			return true;
+		}
+
+		std::cout << "Same Texture was Set Again!\n";
+		return false;
 	}
 
 	void Sprite::SetSize(const Vector2& size) {
-		m_Transform2D.Size = size;
+		m_SpriteData.SpriteTransform2D.Size = size;
 	}
 
 	void Sprite::SetPosition(const Vector2& position) {
-		m_Transform2D.Position = position;
+		m_SpriteData.SpriteTransform2D.Position = position;
 	}
 
-	void Sprite::SetRotation(const float& radians) {
-		m_Transform2D.Rotation = radians;
+	void Sprite::SetRotation(const float& rot) {
+		m_SpriteData.SpriteTransform2D.Rotation = rot;
 	}
 
-	void Sprite::AddTexture(Platform::OpenGL::Texture2D* texture) {
-		if (std::find(m_Textures.begin(), m_Textures.end(), texture) == m_Textures.end()) {
-			m_Textures.push_back(texture);
-		}
+	void Sprite::SetColor(const Vector3& val) {
+		m_SpriteData.Color = val;
 	}
 
 	void Sprite::Draw(const Mat4& view, const Mat4& projection) {
-		m_Shader->Bind();
+		m_SpriteData.SpriteShader->Bind();
 		
-		Mat4 u_MVP = projection * view * m_Transform2D.GetModelMatrix();
+		Mat4 u_MVP = projection * view * m_SpriteData.SpriteTransform2D.GetModelMatrix();
+		m_SpriteData.SpriteShader->SetUniformMat4(ShaderConst::UMVP, u_MVP);
 
-		m_Shader->SetUniformMat4(UMVP, u_MVP);
+		bool texture_attached = (m_SpriteData.SpriteTexture != nullptr);
 
-		for (unsigned int i = 0; i < m_Textures.size(); i++) {
-			m_Textures[i]->Bind(i);
-			m_Shader->SetUniform1i(std::string(UTEX) + std::to_string(i), i);
+		m_SpriteData.SpriteShader->SetUniform1i(ShaderConst::UTEX_ATTACHED, texture_attached);
+		m_SpriteData.SpriteShader->SetUniform4f(ShaderConst::UCOLOR, { m_SpriteData.Color, 0.1f });
+
+		if (m_SpriteData.SpriteTexture != nullptr) {
+			m_SpriteData.SpriteTexture->Bind(0);
+			m_SpriteData.SpriteShader->SetUniform1i(ShaderConst::UTEX, 0);
 		}
 
-		m_Shader->SetUniform1f("u_MixAmount", 0.7f);
-
-		m_Renderer->DrawIndexed(m_VAO, m_IBO->GetIndicesCount());
+		m_Renderer->DrawIndexed(
+			m_ResourceManager->GetResource<Platform::OpenGL::Buffer::VertexArray>(ShaderConst::QUAD_VAO),
+			m_ResourceManager->GetResource<Platform::OpenGL::Buffer::IndexBuffer>(ShaderConst::QUAD_IBO)
+		);
 	}
 }

@@ -14,6 +14,8 @@ namespace Platform::OpenGL {
 		~Renderer();
 
 		void Clear(const glm::vec4& color);
-		void DrawIndexed(Buffer::VertexArray* vao, unsigned int index_count);
+
+		void DrawArray(Buffer::VertexArray* vao);
+		void DrawIndexed(Buffer::VertexArray* vao, Buffer::IndexBuffer* ibo);		
 	};
 }

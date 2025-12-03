@@ -31,9 +31,15 @@ namespace Platform::OpenGL {
 		GLCall(glClear(GL_COLOR_BUFFER_BIT));
 	}
 
-	void Renderer::DrawIndexed(Buffer::VertexArray* vao, unsigned int index_count) {
+
+	void Renderer::DrawArray(Buffer::VertexArray* vao) {
+		
+	}
+
+
+	void Renderer::DrawIndexed(Buffer::VertexArray* vao, Buffer::IndexBuffer* ibo) {
 		vao->Bind();
-		GLCall(glDrawElements(GL_TRIANGLES, index_count, GL_UNSIGNED_INT, nullptr));
+		GLCall(glDrawElements(GL_TRIANGLES, ibo->GetIndicesCount(), GL_UNSIGNED_INT, nullptr));
 	}
 
 }
