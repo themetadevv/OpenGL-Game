@@ -98,5 +98,7 @@ namespace Game {
 		else if (m_SpriteData.Mesh->GetMeshType() == Platform::OpenGL::MeshType::Triangle) {
 			m_Renderer->DrawArray(m_SpriteData.Mesh->GetVAO());
 		}
+
+		m_SpriteData.Shader->Unbind();
 	}
 }

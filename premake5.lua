@@ -1,7 +1,7 @@
 workspace "OpenGL_Game"
     architecture "x64"
     configurations {"Debug", "Release"}
-    startproject "projects/Sandbox"
+    startproject "projects/application"
 
 base_dir = "bin"
 output_dir = (base_dir .. "/builds")
@@ -12,13 +12,14 @@ external_dependencies["GLFW"] = "projects/libs/GLFW/include"
 external_dependencies["Glad"] = "projects/libs/Glad/include"
 external_dependencies["ImGui"] = "projects/libs/ImGui"
 external_dependencies["glm"] = "projects/libs/glm"
+external_dependencies["freetype"] = "projects/libs/freetype/include"
 
 include "projects/libs/GLFW"
 include "projects/libs/Glad"
 include "projects/libs/ImGui"
 
-project "Sandbox"
-    location "projects/Sandbox"
+project "application"
+    location "projects/application"
     kind "ConsoleApp"
     language "C++"   
     staticruntime "Off"
@@ -29,7 +30,7 @@ project "Sandbox"
     objdir (intermediates_dir .. "/%{cfg.system}")
 
     pchheader "pch.h"
-    pchsource "projects/Sandbox/src/pch.cpp"
+    pchsource "projects/application/src/pch.cpp"
 
     files {
         "%{prj.location}/src/**.c",
@@ -39,18 +40,20 @@ project "Sandbox"
     }
 
     includedirs {
-        "projects/Sandbox/src",
-        "projects/Sandbox/vendor",
+        "projects/application/src",
+        "projects/application/vendor",
         "%{external_dependencies.GLFW}",
         "%{external_dependencies.Glad}",
         "%{external_dependencies.ImGui}",
-        "%{external_dependencies.glm}"
+        "%{external_dependencies.glm}",
+        "%{external_dependencies.freetype}"
     }
 
     links {
-        "GLFW",
-        "Glad",
-        "ImGui",
+        "gLFW",
+        "glad",
+        "imgui",
+        "projects/libs/freetype/lib/freetype",
         "opengl32.lib"
     }
 

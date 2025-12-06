@@ -12,6 +12,8 @@
 #include "Game/Sprite.h"
 #include "Game/Utils/ResManager.h"
 
+#include <free_type.h>
+
 // test program
 int main() {
 	using namespace Platform::OpenGL;
@@ -47,48 +49,66 @@ int main() {
 	bird_sprite->SetMesh(quad_mesh);
 
 	Vector2 birdpos(100.0f, 50.0f);
-	float gravity = -200.0f; // pixels per second squared
-	float jumpVelocity = 150.0f; // initial jump velocity
+	float gravity = -200.0f; 
+	float jumpVelocity = 150.0f; 
 	float birdVelocity = 0.0f;
+
+
+	bird_sprite->SetSize({ 50.0f,50.0f });
+	Vector2 cursor_pos(1.0f);
 
 	while (window->Running()) {
 		renderer->Clear({ 0.3f,0.2f,0.3f,1.0f });
 
-		bird_sprite->SetSize({ 50.0f,50.0f });
-
 		Color sprite_color = Color(255.0f);
+
+		cursor_pos = Vector2((float)Core::Input::GetMousePosX(), (float)Core::Input::GetMousePosY());
+		//std::cout << "Cursor Pos (X, Y) : " << cursor_pos.x << ", " << cursor_pos.y << '\n';
 
 		if (Core::Input::IsKeyPressed(KeyCode::Escape))
 			window->OnShutdown();
 
 		if (Core::Input::IsKeyDown(KeyCode::W))
-			birdpos.y += 100.0f * Core::Time::GetDeltaTime();
+			birdpos.y += 100.0f * (float)Core::Time::GetDeltaTime();
 
 		if (Core::Input::IsKeyDown(KeyCode::S))
-			birdpos.y -= 100.0f * Core::Time::GetDeltaTime();
+			birdpos.y -= 100.0f * (float)Core::Time::GetDeltaTime();
 
 		if (Core::Input::IsKeyDown(KeyCode::A))
-			birdpos.x -= 100.0f * Core::Time::GetDeltaTime();
+			birdpos.x -= 100.0f * (float)Core::Time::GetDeltaTime();
 
 		if (Core::Input::IsKeyDown(KeyCode::D))
-			birdpos.x += 100.0f * Core::Time::GetDeltaTime();
+			birdpos.x += 100.0f * (float)Core::Time::GetDeltaTime();
 
-		if (Core::Input::IsKeyPressed(KeyCode::Space)) // jump once
+		if (Core::Input::IsKeyPressed(KeyCode::Space)) 
 			birdVelocity = jumpVelocity;
 
 		if (Core::Input::IsMouseButtonDown(MouseCode::Left))
 			sprite_color = Color(255.0f, 0.0f, 0.0f);
 
 		if (Core::Input::IsMouseButtonReleased(MouseCode::Left))
-			sprite_color = Color(0.0f, 0.0f, 255.0f);
+			sprite_color = Color(0.0f, 255.0f, 0.0f, 150.0f);
 
-		birdVelocity += gravity * Core::Time::GetDeltaTime(); // apply gravity
+		birdVelocity += gravity * Core::Time::GetDeltaTime();
 		birdpos.y += birdVelocity * Core::Time::GetDeltaTime();
 
 		// draw
 		bird_sprite->SetPosition(birdpos);
 		bird_sprite->SetColor(sprite_color);
 		bird_sprite->SetMVP(view_matrix, projection_matrix);
+
+		float right = bird_sprite->GetPosition().x + bird_sprite->GetSize().x;
+		float left = bird_sprite->GetPosition().x;
+		float bottom = bird_sprite->GetPosition().y;
+		float top = bird_sprite->GetPosition().y + bird_sprite->GetSize().y;
+
+		float windowW = window->GetWindowData().Width;
+		float windowH = window->GetWindowData().Height;
+
+		if (right >= windowW || left <= 0.0f || bottom <= 0.0f || top >= windowH) {
+			std::cout << "Bird Died\n";
+		}
+
 		bird_sprite->Draw();
 
 		Core::Input::Update();
@@ -103,5 +123,4 @@ int main() {
 	delete mesh_shader;
 	delete bird_texture;
 	delete bird_sprite;
-
 }

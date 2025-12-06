@@ -43,6 +43,10 @@ namespace Game {
 
 		void SetMVP(const Mat4& view, const Mat4& projection);
 
+		inline const Vector2& GetSize() const {
+			return m_SpriteData.Transform.Size;
+		}
+
 		inline const Vector2& GetPosition() const {
 			return m_SpriteData.Transform.Position;
 		}

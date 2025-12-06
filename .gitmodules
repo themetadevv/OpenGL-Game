@@ -10,3 +10,6 @@
 [submodule "projects/libs/glm"]
 	path = projects/libs/glm
 	url = https://github.com/g-truc/glm
+[submodule "projects/libs/freetype"]
+	path = projects/libs/freetype
+	url = https://github.com/themetadevv/freetype
