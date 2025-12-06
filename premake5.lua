@@ -37,6 +37,8 @@ project "application"
         "%{prj.location}/src/**.h",
         "%{prj.location}/src/**.cpp",
         "%{prj.location}/src/**.hpp",
+        "projects/application/vendor/**.h",
+        "projects/application/vendor/**.cpp",
     }
 
     includedirs {
