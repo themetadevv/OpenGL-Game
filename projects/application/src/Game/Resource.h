@@ -1,16 +1,16 @@
 #pragma once
 
-#include "Platform/OpenGL/OpenGL.h"
+#include "OpenGL/OpenGL.h"
 #include "Game/Sprite.h"
 
 namespace Game {
 	class ResourceManager {
 	private:
-		std::unordered_map<std::string, std::unique_ptr<Platform::OpenGL::Shader>>    m_Shaders;
-		std::unordered_map<std::string, std::unique_ptr<Platform::OpenGL::Texture2D>> m_Textures2D;
+		std::unordered_map<std::string, std::unique_ptr<OpenGL::Shader>>    m_Shaders;
+		std::unordered_map<std::string, std::unique_ptr<OpenGL::Texture2D>> m_Textures2D;
 
-		std::unordered_map<std::string, std::unique_ptr<Platform::OpenGL::Mesh::Quad>>      m_QuadMeshes;
-		std::unordered_map<std::string, std::unique_ptr<Platform::OpenGL::Mesh::Triangle>>  m_TriangleMeshes;
+		std::unordered_map<std::string, std::unique_ptr<OpenGL::Mesh::Quad>>      m_QuadMeshes;
+		std::unordered_map<std::string, std::unique_ptr<OpenGL::Mesh::Triangle>>  m_TriangleMeshes;
 
 		std::unordered_map<std::string, std::unique_ptr<Sprite>> m_Sprites;
 
@@ -21,7 +21,7 @@ namespace Game {
 		};
 
 		template<>
-		struct Resource<Platform::OpenGL::Shader> {
+		struct Resource<OpenGL::Shader> {
 			static constexpr bool m_NameRequired = true;
 
 			static auto& Get(ResourceManager* rm) {
@@ -30,7 +30,7 @@ namespace Game {
 		};
 
 		template<>
-		struct Resource<Platform::OpenGL::Texture2D> {
+		struct Resource<OpenGL::Texture2D> {
 			static constexpr bool m_NameRequired = true;
 
 			static auto& Get(ResourceManager* rm) {
@@ -39,7 +39,7 @@ namespace Game {
 		};
 
 		template<>
-		struct Resource<Platform::OpenGL::Mesh::Quad> {
+		struct Resource<OpenGL::Mesh::Quad> {
 			static constexpr bool m_NameRequired = false;
 
 			static auto& Get(ResourceManager* rm) {
@@ -48,7 +48,7 @@ namespace Game {
 		};
 
 		template<>
-		struct Resource<Platform::OpenGL::Mesh::Triangle> {
+		struct Resource<OpenGL::Mesh::Triangle> {
 			static constexpr bool m_NameRequired = false;
 
 			static auto& Get(ResourceManager* rm) {

@@ -1,7 +1,7 @@
 #pragma once
 
 
-namespace Platform::OpenGL::Buffer {
+namespace OpenGL::Buffer {
 	class IndexBuffer {
 	private:
 		unsigned int m_RendererID;

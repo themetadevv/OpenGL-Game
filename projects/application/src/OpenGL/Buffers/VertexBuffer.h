@@ -1,8 +1,7 @@
 #pragma once
 
-#include "Core/Core.h"
 
-namespace Platform::OpenGL::Buffer {
+namespace OpenGL::Buffer {
 	class VertexBuffer {
 	private:
 		unsigned int m_RendererID;

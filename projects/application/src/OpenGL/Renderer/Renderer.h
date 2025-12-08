@@ -1,10 +1,10 @@
 #pragma once
 
-#include "Platform/OpenGL/Buffers/VertexArray.h"
-#include "Platform/OpenGL/Buffers/VertexBuffer.h"
-#include "Platform/OpenGL/Buffers/IndexBuffer.h"
+#include "OpenGL/Buffers/VertexArray.h"
+#include "OpenGL/Buffers/VertexBuffer.h"
+#include "OpenGL/Buffers/IndexBuffer.h"
 
-namespace Platform::OpenGL {
+namespace OpenGL {
 	class Renderer {
 	private:
 		void Initialize();

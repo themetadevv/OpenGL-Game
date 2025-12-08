@@ -2,7 +2,7 @@
 
 #include "VertexBuffer.h"
 
-namespace Platform::OpenGL::Buffer {
+namespace OpenGL::Buffer {
 	struct VertexBufferLayoutElement {
 		unsigned int Size;
 		unsigned int Type;

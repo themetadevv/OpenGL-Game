@@ -2,11 +2,11 @@
 #include "pch.h"
 #include "Core/Core.h"
 
-#include "Platform/OpenGL/OpenGL_Core.h"
+#include "OpenGL/OpenGL_Core.h"
 
 #include "IndexBuffer.h"
 
-namespace Platform::OpenGL::Buffer {
+namespace OpenGL::Buffer {
 	IndexBuffer::IndexBuffer(unsigned int indices_count, const void* data)
 		: m_RendererID(0), m_IndicesCount(indices_count) 
 	{

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Platform/OpenGL/Maths.h"
+#include "OpenGL/Maths.h"
 
 namespace ShaderConst {
 	constexpr char UMVP[] = "u_MVP";
@@ -9,7 +9,7 @@ namespace ShaderConst {
 	constexpr char UTEX_ATTACHED[] = "u_TextureAttached";
 }
 
-namespace Platform::OpenGL {
+namespace OpenGL {
 	enum struct ShaderType {
 		NONE = -1,
 		VERTEX, FRAGMENT

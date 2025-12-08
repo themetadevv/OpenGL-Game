@@ -8,20 +8,30 @@
 
 #include "Game/Level.h"
 #include "Game/Sprite.h"
-#include "Game/Utils/ResManager.h"
+#include "Game/Resource.h"
+
+#include "Core/Font.h"
 
 #include <free_type.h>
 
 // test program
 int main() {
-	using namespace Platform::OpenGL;
+	using namespace OpenGL;
+
+	Core::FontSpecification font_spec;
+	font_spec.Name = "Arial";
+	font_spec.Path = "assets/arial.ttf";
+	font_spec.FaceIndex = 0;
+	font_spec.Size = 48;
+
+	Core::Font* font = new Core::Font(font_spec);
 
 	Core::WindowSpecification Specs;
 	Specs.Title = "Platform - " + std::string(PLATFORM) + " API - OpenGL\n";
 	Specs.Size.first = 1600;
 	Specs.Size.second = 900;
 	Specs.VidMode = Core::VideoMode::Windowed;
-	Specs.WinState = Core::WindowState::None;
+	Specs.WinState = Core::WindowState::Maximized | Core::WindowState::Minimized | Core::WindowState::InputFocused;
 	Specs.VSync = true;
 
 	std::cout << (uint32_t)Specs.WinState << '\n';

@@ -2,12 +2,10 @@
 #include "pch.h"
 #include "Core/Core.h"
 
-#include "Platform/OpenGL/OpenGL_Core.h"
-
-
+#include "OpenGL/OpenGL_Core.h"
 #include "Shader.h"
 
-namespace Platform::OpenGL {
+namespace OpenGL {
 	Shader::Shader(const std::string& shader_name, const std::string& shader_path) : m_RendererID(NULL) {
 		CORE_ASSERT(ParseShader(shader_name, shader_path), ("Failed to parse shader : " + shader_name + ", " + shader_path).c_str());
 		CORE_ASSERT(CompileShader(), "Failed to compile shader!");

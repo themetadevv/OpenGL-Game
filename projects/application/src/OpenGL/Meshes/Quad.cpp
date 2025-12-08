@@ -2,10 +2,10 @@
 #include "pch.h"
 #include "Core/Core.h"
 
-#include "Platform/OpenGL/OpenGL.h"
+#include "OpenGL/OpenGL.h"
 #include "Quad.h"
 
-namespace Platform::OpenGL::Mesh {
+namespace OpenGL::Mesh {
 	Quad::Quad() :
 		m_MeshType(MeshType::Quad), m_MeshID(GenerateMeshID())
 	{

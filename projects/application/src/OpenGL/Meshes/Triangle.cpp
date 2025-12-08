@@ -4,7 +4,7 @@
 
 #include "Triangle.h"
 
-namespace Platform::OpenGL::Mesh {
+namespace OpenGL::Mesh {
 	Triangle::Triangle() 
 		: m_MeshType(MeshType::Triangle), m_MeshID(GenerateMeshID())
 	{

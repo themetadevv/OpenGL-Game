@@ -4,12 +4,12 @@
 #include "Core/Core.h"
 #include "Core/Window.h"
 
-#include "Platform/OpenGL/OpenGL_Core.h"
-#include "Platform/OpenGL/Maths.h"
+#include "OpenGL/OpenGL_Core.h"
+#include "OpenGL/Maths.h"
 
 #include "Renderer.h"
 
-namespace Platform::OpenGL {
+namespace OpenGL {
 	Renderer::Renderer() {
 		Initialize();
 	}

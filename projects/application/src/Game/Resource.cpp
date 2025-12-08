@@ -2,7 +2,7 @@
 #include "pch.h"
 #include "Core/Core.h"
 
-#include "ResManager.h"
+#include "Resource.h"
 
 namespace Game {
 

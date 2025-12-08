@@ -132,27 +132,21 @@ namespace Core {
 		if (m_CurrentWindowState == ws && m_Initialized)
 			return;
 
-		switch (ws) {
-			case Core::WindowState::None: {
-				static_assert("Unknown Window State Type!");
-				break;
-			}
-			
-			case Core::WindowState::Maximized: {
-				glfwMaximizeWindow(m_WindowHandle);
-				break;
-			}
+		if ((ws & WindowState::Maximized) == WindowState::Maximized)
+			glfwMaximizeWindow(m_WindowHandle);
 
-			case Core::WindowState::Minimized: {
-				glfwIconifyWindow(m_WindowHandle);
-				break;
-			}
+		if ((ws & WindowState::Minimized) == WindowState::Minimized)
+			glfwIconifyWindow(m_WindowHandle);
 
-			case Core::WindowState::InputFocused: {
-				glfwFocusWindow(m_WindowHandle);
-			}
+		if ((ws & WindowState::InputFocused) == WindowState::InputFocused) {
+			glfwRestoreWindow(m_WindowHandle);
+			glfwShowWindow(m_WindowHandle);    
+			glfwFocusWindow(m_WindowHandle);     
 		}
+
+		m_CurrentWindowState = ws;
 	}
+
 
 	// <------------------ Functions ------------------>
 

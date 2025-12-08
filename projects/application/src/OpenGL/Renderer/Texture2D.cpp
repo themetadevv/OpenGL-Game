@@ -2,15 +2,15 @@
 #include "pch.h"
 #include "Core/Core.h"
 
-#include "Platform/OpenGL/OpenGL_Core.h"
+#include "OpenGL/OpenGL_Core.h"
 
-#include "Platform/OpenGL/Maths.h"
+#include "OpenGL/Maths.h"
 
 #include <stb_image.h>
 
 #include "Texture2D.h"
 
-namespace Platform::OpenGL {
+namespace OpenGL {
 	
 	uint32_t TextureFormatToGLInternalFormat(TextureFormat texture_format) {
 		switch (texture_format) {
@@ -121,7 +121,7 @@ namespace Platform::OpenGL {
 		GLCall(glTextureSubImage2D(m_RendererID, 0, 0, 0, m_TextureData.Width, m_TextureData.Height, m_DataFormat, GL_UNSIGNED_BYTE, data));
 	}
 
-	void Texture2D::Bind(int texture_slot) const {	
+	void Texture2D::OverrideBind(int texture_slot) const {	
 		GLCall(glBindTextureUnit(texture_slot, m_RendererID));
 	}
 }

@@ -1,18 +1,17 @@
 #pragma once
 
-#include "Platform/OpenGL/Renderer/Mesh.h"
+#include "OpenGL/Renderer/Mesh.h"
 
-namespace Platform::OpenGL::Mesh {
-	class Quad : public IMesh {
+namespace OpenGL::Mesh {
+	class Triangle : public IMesh {
 	private:
 		uint32_t m_MeshID;
 		MeshType m_MeshType;
 		std::unique_ptr<Buffer::VertexArray>  m_VAO;
 		std::unique_ptr<Buffer::VertexBuffer> m_VBO;
-		std::unique_ptr<Buffer::IndexBuffer>  m_IBO;
 
 	public:
-		Quad();
+		Triangle();
 
 		inline const MeshType& GetMeshType() const override {
 			return m_MeshType;
@@ -24,10 +23,6 @@ namespace Platform::OpenGL::Mesh {
 
 		inline Buffer::VertexArray* GetVAO() const override {
 			return m_VAO.get();
-		}
-
-		inline Buffer::IndexBuffer* GetIBO() const override {
-			return m_IBO.get();
 		}
 	};
 }

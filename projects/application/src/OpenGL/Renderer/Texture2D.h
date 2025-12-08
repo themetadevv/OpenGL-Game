@@ -2,7 +2,7 @@
 
 // This texture class below may only work for OpenGL 4.6
 
-namespace Platform::OpenGL {
+namespace OpenGL {
 	enum class ImageFormat {
 		None = -1,
 		PNG,
@@ -54,8 +54,7 @@ namespace Platform::OpenGL {
 		const uint32_t  GetHeight() const { return  m_TextureData.Height; }
 
 		void SetData(void* data, uint32_t size) const;
-		void Bind(int texture_slot) const;
-		void Unbind() const;
+		void OverrideBind(int texture_slot) const;
 	};
 }
 

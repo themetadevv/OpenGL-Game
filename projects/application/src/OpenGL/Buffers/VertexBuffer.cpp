@@ -1,10 +1,12 @@
 
 #include "pch.h"
+#include "Core/Core.h"
+
 #include "VertexBuffer.h"
 
-#include "Platform/OpenGL/OpenGL_Core.h"
+#include "OpenGL/OpenGL_Core.h"
 
-namespace Platform::OpenGL::Buffer {
+namespace OpenGL::Buffer {
 
 	VertexBuffer::VertexBuffer(unsigned int size, const void* data) 
 		: m_RendererID(0)

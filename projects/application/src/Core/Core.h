@@ -43,6 +43,7 @@ void Log(Args&&... args) {
 	(std::cout << ... << args);
 	std::cout << '\n';
 }
+
 #else
 
 template<typename... Args>

@@ -1,14 +1,14 @@
 #pragma once
 
-#include "Platform/OpenGL/OpenGL.h"
+#include "OpenGL/OpenGL.h"
 
 namespace Game {
 	struct SpriteData {
 		std::string Name;
 
-		Platform::OpenGL::Shader*    Shader;
-		Platform::OpenGL::Texture2D* Texture;
-		Platform::OpenGL::IMesh*     Mesh;
+		OpenGL::Shader*    Shader;
+		OpenGL::Texture2D* Texture;
+		OpenGL::IMesh*     Mesh;
 
 		Color SpriteColor;
 		Transform2D Transform;
@@ -22,19 +22,19 @@ namespace Game {
 
 	class Sprite {
 	private:
-		Platform::OpenGL::Renderer* m_Renderer;
+		OpenGL::Renderer* m_Renderer;
 		SpriteData m_SpriteData;
 
 	public:
-		Sprite(const std::string& name, Platform::OpenGL::Renderer* renderer);
+		Sprite(const std::string& name, OpenGL::Renderer* renderer);
 
 		void ClearShader();
 		void ClearTexture();
 		void ClearMesh();
 
-		bool SetShader(Platform::OpenGL::Shader* shader);
-		bool SetTexture(Platform::OpenGL::Texture2D* texture);
-		bool SetMesh(Platform::OpenGL::IMesh* mesh);
+		bool SetShader(OpenGL::Shader* shader);
+		bool SetTexture(OpenGL::Texture2D* texture);
+		bool SetMesh(OpenGL::IMesh* mesh);
 
 		void SetSize(const Vector2& size);
 		void SetPosition(const Vector2& position);
@@ -59,12 +59,12 @@ namespace Game {
 			return m_SpriteData.Name;
 		}
 
-		inline const Platform::OpenGL::Shader* GetBoundShader() const {
+		inline const OpenGL::Shader* GetBoundShader() const {
 			CORE_ASSERT(m_SpriteData.Shader, ("No! Shader was Bound in Sprite -> " + m_SpriteData.Name + "\n").c_str());
 			return m_SpriteData.Shader;
 		}
 
-		inline const Platform::OpenGL::Texture2D* GetBoundTexture() const {
+		inline const OpenGL::Texture2D* GetBoundTexture() const {
 			CORE_ASSERT(m_SpriteData.Texture, ("No! Texture was Bound in Sprite -> " + m_SpriteData.Name + "\n").c_str());
 			return m_SpriteData.Texture;
 		}

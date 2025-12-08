@@ -2,11 +2,11 @@
 #include "pch.h"
 #include "Core/Core.h"
 
-#include "Platform/OpenGL/OpenGL_Core.h"
+#include "OpenGL/OpenGL_Core.h"
 
 #include "VertexArray.h"
 
-namespace Platform::OpenGL::Buffer {
+namespace OpenGL::Buffer {
 	
 	VertexArray::VertexArray() {
 		GLCall(glGenVertexArrays(1, &m_RendererID));

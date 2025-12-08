@@ -3,7 +3,7 @@
 #include "VertexBuffer.h"
 #include "VertexBufferLayout.h"
 
-namespace Platform::OpenGL::Buffer {
+namespace OpenGL::Buffer {
 	class VertexArray {
 	private:
 		unsigned int m_RendererID;

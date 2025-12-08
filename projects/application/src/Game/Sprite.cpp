@@ -5,7 +5,7 @@
 #include "Sprite.h"
 
 namespace Game {
-	Sprite::Sprite(const std::string& name, Platform::OpenGL::Renderer* renderer) :
+	Sprite::Sprite(const std::string& name, OpenGL::Renderer* renderer) :
 		m_Renderer(renderer)
 	{
 		m_SpriteData.Name = name;
@@ -23,7 +23,7 @@ namespace Game {
 		m_SpriteData.Mesh = nullptr;
 	}
 
-	bool Sprite::SetShader(Platform::OpenGL::Shader* shader) {
+	bool Sprite::SetShader(OpenGL::Shader* shader) {
 		if (m_SpriteData.Shader != shader) {
 			m_SpriteData.Shader = shader;
 			return true;
@@ -33,7 +33,7 @@ namespace Game {
 		return false;
 	}
 
-	bool Sprite::SetTexture(Platform::OpenGL::Texture2D* texture) {
+	bool Sprite::SetTexture(OpenGL::Texture2D* texture) {
 		if (m_SpriteData.Texture != texture) {
 			m_SpriteData.Texture = texture;
 			return true;
@@ -43,7 +43,7 @@ namespace Game {
 		return false;
 	}
 
-	bool Sprite::SetMesh(Platform::OpenGL::IMesh* mesh) {
+	bool Sprite::SetMesh(OpenGL::IMesh* mesh) {
 		if (m_SpriteData.Mesh != mesh) {
 			m_SpriteData.Mesh = mesh;
 			return true;
@@ -85,17 +85,17 @@ namespace Game {
 		m_SpriteData.Shader->SetUniform4f(ShaderConst::UCOLOR, { m_SpriteData.SpriteColor.R, m_SpriteData.SpriteColor.G, m_SpriteData.SpriteColor.B, m_SpriteData.SpriteColor.A });
 
 		if (m_SpriteData.Texture != nullptr) {
-			m_SpriteData.Texture->Bind(0);
+			m_SpriteData.Texture->OverrideBind(0);
 			m_SpriteData.Shader->SetUniform1i(ShaderConst::UTEX, 0);
 		}
 
-		if (m_SpriteData.Mesh->GetMeshType() == Platform::OpenGL::MeshType::Quad) {
+		if (m_SpriteData.Mesh->GetMeshType() == OpenGL::MeshType::Quad) {
 			m_Renderer->DrawIndexed(
 				m_SpriteData.Mesh->GetVAO(),
 				m_SpriteData.Mesh->GetIBO()
 			);
 		}
-		else if (m_SpriteData.Mesh->GetMeshType() == Platform::OpenGL::MeshType::Triangle) {
+		else if (m_SpriteData.Mesh->GetMeshType() == OpenGL::MeshType::Triangle) {
 			m_Renderer->DrawArray(m_SpriteData.Mesh->GetVAO());
 		}
 
