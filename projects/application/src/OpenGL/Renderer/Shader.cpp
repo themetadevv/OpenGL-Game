@@ -2,60 +2,99 @@
 #include "pch.h"
 #include "Core/Core.h"
 
+#include "Core/Utils.h"
+
 #include "OpenGL/OpenGL_Core.h"
 #include "Shader.h"
 
 namespace OpenGL {
-	Shader::Shader(const std::string& shader_name, const std::string& shader_path) : m_RendererID(NULL), m_ShaderBound(false) {
-		CORE_ASSERT(ParseShader(shader_name, shader_path), ("Failed to parse shader : " + shader_name + ", " + shader_path).c_str());
-		CORE_ASSERT(CompileShader(), "Failed to compile shader!");
-	}
+	enum struct ShaderParseStage {
+		None = -1,
+		Vertex,
+		Fragment
+	};
 
-	Shader::~Shader() {
-		GLCall(glDeleteProgram(m_RendererID));
-	}
+	// <------------------ Constructors/Deconstructor ------------------>
 
+	Shader::Shader(RoString shader_name, RoString shader_src_path) : 
+		m_RendererID(NULL), m_ShaderLoaded(false),  m_ShaderBound(false) 
+	{
+		std::stringstream shader_data[3];
 
-	const bool Shader::ParseShader(const std::string& shader_name, const std::string& shader_path) {
-		std::stringstream shader_source[2];
-		bool all_shaders_section_parsed = false;
-		std::ifstream shader_file_content(shader_path);
+		// shader file path check
+		if (!std::filesystem::exists(std::filesystem::path(shader_src_path))) {
+			LOG_ASSERT(0, std::format(
+				"[Shader] Parsing Error : shader file does not exists! path -> {}", 
+				shader_src_path				
+			));
 
+			return;
+		}		 
+
+		std::ifstream shader_file_content {
+			std::filesystem::path(shader_src_path)
+		};
+
+		// shader file open status check
 		if (!shader_file_content.is_open()) {
-			std::cout << "Failed to open shader file!" << '\n';
-			return false;
+			LOG_ASSERT(0, std::format(
+				"[Shader] Parsing Error : failed to open shader file! path -> {}",
+				shader_src_path
+			));
+
+			return;
 		}
 
 		std::string line;
-
-		ShaderType m_CurrentShaderType;
-
-		m_CurrentShaderType = ShaderType::NONE;
-
+		ShaderParseStage shader_parse_stage = ShaderParseStage::None;
 		while (getline(shader_file_content, line)) {
 			if (line.find("// VERTEX") != std::string::npos) {
-				m_CurrentShaderType = ShaderType::VERTEX;
+				shader_parse_stage = ShaderParseStage::Vertex;
 				continue;
 			}
 
 			if (line.find("// FRAGMENT") != std::string::npos) {
-				m_CurrentShaderType = ShaderType::FRAGMENT;
+				shader_parse_stage = ShaderParseStage::Fragment;
 				continue;
 			}
 
-			if (m_CurrentShaderType == ShaderType::NONE) {
-				std::cout << "Unknown Shader Type was bound!\n";
-				return false;
+			// shader parse stage check
+			if (shader_parse_stage == ShaderParseStage::None) {
+				LOG_ASSERT(0, std::format(
+					"[Shader] Parsing Error : unknown shader stage! make sure '// VERTEX' and '// FRAGMENT' was passed! path -> {}",
+					shader_src_path
+				));
+
+				return;
 			}
 
-			shader_source[(int)m_CurrentShaderType] << line << '\n';
+			shader_data[(int)shader_parse_stage] << line << '\n';
 		}
 
-		m_ShaderData = ShaderData(shader_name, shader_source[0].str(), shader_source[1].str());
-		return true;
+		m_ShaderData.Name = shader_name;
+		m_ShaderData.Path = shader_src_path;
+		m_ShaderData.VertexShaderSource = shader_data[(int)ShaderParseStage::Vertex].str();
+		m_ShaderData.FragmentShaderSource = shader_data[(int)ShaderParseStage::Fragment].str();
+
+		if(CompileShader()) 
+			m_ShaderLoaded = true;
 	}
 
-	const bool Shader::CompileShader() {
+	Shader::Shader(RoString shader_name, RoString vertex_shader_src_path, RoString fragment_shader_src_path) :
+		m_RendererID(NULL), m_ShaderLoaded(false), m_ShaderBound(false) 
+	{
+		
+	}
+
+	Shader::~Shader() {
+		if(m_RendererID)
+			GLCall(glDeleteProgram(m_RendererID));
+	}
+
+	// <------------------ Private Functions ------------------>
+
+
+	bool Shader::CompileShader() {
 		const char* vertex_shader_source = m_ShaderData.VertexShaderSource.c_str();
 		const char* fragment_shader_source = m_ShaderData.FragmentShaderSource.c_str();
 
@@ -67,7 +106,16 @@ namespace OpenGL {
 		GLCall(glGetShaderiv(vertex_shader_id, GL_COMPILE_STATUS, &vertex_shader_compile_status_id));
 		if (!vertex_shader_compile_status_id) {
 			GLCall(glGetShaderInfoLog(vertex_shader_id, sizeof(vertex_shader_compile_status_logs), nullptr, vertex_shader_compile_status_logs));
-			std::cout << "Failed to compile vertex section of shader : " << m_ShaderData.Name << '\n' << "Logs -> \n" << vertex_shader_compile_status_logs << '\n';
+
+			std::string gl_log = vertex_shader_compile_status_logs;
+			while (!gl_log.empty() && (gl_log.back() == '\n' || gl_log.back() == '\r'))
+				gl_log.pop_back();
+
+			LOG_ASSERT(0, std::format(
+				"[Shader] Compile Error : failed to compile VERTEX section of the shader! name -> '{}', path -> '{}'\nLogs -> {}",
+				m_ShaderData.Name, m_ShaderData.Path, gl_log
+			));
+
 			return false;
 		}
 
@@ -79,7 +127,16 @@ namespace OpenGL {
 		GLCall(glGetShaderiv(fragment_shader_id, GL_COMPILE_STATUS, &fragment_shader_compile_status_id));
 		if (!fragment_shader_compile_status_id) {
 			GLCall(glGetShaderInfoLog(fragment_shader_id, sizeof(fragment_shader_compile_status_logs), nullptr, fragment_shader_compile_status_logs));
-			std::cout << "Failed to compile fragment section of shader : " << m_ShaderData.Name << '\n' << "Logs -> \n" << fragment_shader_compile_status_logs << '\n';
+
+			std::string gl_log = fragment_shader_compile_status_logs;
+			while (!gl_log.empty() && (gl_log.back() == '\n' || gl_log.back() == '\r'))
+				gl_log.pop_back();
+
+			LOG_ASSERT(0, std::format(
+				"[Shader] Compile Error : failed to compile FRAGMENT section of the shader! name -> '{}', path -> '{}'\n| GL Logs -> {} ",
+				m_ShaderData.Name, m_ShaderData.Path, gl_log
+			));
+
 			return false;
 		}
 
@@ -92,7 +149,16 @@ namespace OpenGL {
 		GLCall(glGetProgramiv(m_RendererID, GL_LINK_STATUS, &shader_program_link_status_id));
 		if (!shader_program_link_status_id) {
 			GLCall(glGetProgramInfoLog(m_RendererID, sizeof(shader_program_link_status_logs), nullptr, shader_program_link_status_logs));
-			std::cout << "Failed to link shader : " << m_ShaderData.Name << '\n' << "Logs -> \n" << shader_program_link_status_logs << '\n';
+
+			std::string gl_log = shader_program_link_status_logs;
+			while (!gl_log.empty() && (gl_log.back() == '\n' || gl_log.back() == '\r'))
+				gl_log.pop_back();
+
+			LOG_ASSERT(0, std::format(
+				"[Shader] Linking Error : failed to link the shader! name -> '{}', path -> '{}',| GL Logs -> {} \n",
+				m_ShaderData.Name, m_ShaderData.Path, gl_log
+			));
+
 			return false;
 		}
 
@@ -102,23 +168,13 @@ namespace OpenGL {
 		return true;
 	}
 
-	const int Shader::GetCachedUniformLocation(const std::string& uniform_name) {
-		if (m_UniformCache.find(uniform_name) != m_UniformCache.end())
-			return m_UniformCache[uniform_name];
-
-		GLCall(int uniform_location = glGetUniformLocation(m_RendererID, uniform_name.c_str()));
-		if (uniform_location == -1) {
-			std::cout << std::endl;
-			std::cout << "Failed to locate uniform : " << uniform_name << '\n';
-		}
-
-		m_UniformCache[uniform_name] = uniform_location;
-
-		return uniform_location;
-	}
+	// <------------------ Public Functions ------------------>
 
 	void Shader::Bind() {
-		GLCall(glUseProgram(m_RendererID));
+		if (!m_ShaderBound) {
+			GLCall(glUseProgram(m_RendererID));
+			m_ShaderBound = true;
+		}
 	}
 
 	void Shader::Unbind() {
@@ -128,28 +184,28 @@ namespace OpenGL {
 		}
 	}
 
-	void Shader::SetUniform1i(const std::string& name, int value) {
-		GLCall(glUniform1i(GetCachedUniformLocation(name), value));
-	}
+	int Shader::GetCachedUniformLocation(const std::string& uniform_name) {
+		if (!ShaderBound()) {
+			LOG_ASSERT(0, std::format(
+				"[Shader] Error : bind the shader '{}' before setting the uniform '{}'", 
+				m_ShaderData.Name, uniform_name
+			));
+			return INVALID_UNIFORM_LOCATION;
+		}
 
-	void Shader::SetUniform1f(const std::string& name, float value) {
-		GLCall(glUniform1f(GetCachedUniformLocation(name), value));
-	}
+		if (m_StoredUniforms.find(uniform_name) != m_StoredUniforms.end())
+			return m_StoredUniforms[uniform_name];
 
-	void Shader::SetUniform2f(const std::string& name, const glm::vec2& value) {
-		GLCall(glUniform2f(GetCachedUniformLocation(name), value.x, value.y));
-	}
+		GLCall(int loc = glGetUniformLocation(m_RendererID, uniform_name.c_str()));
+		if (loc == INVALID_UNIFORM_LOCATION) {
+			LOG_ASSERT(0, std::format(
+				"[Shader] Error : failed to locate uniform '{}' in shader '{}'",
+				uniform_name, m_ShaderData.Name
+			));
+			return INVALID_UNIFORM_LOCATION;
+		}
 
-	void Shader::SetUniform3f(const std::string& name, const glm::vec3& value) {
-		GLCall(glUniform3f(GetCachedUniformLocation(name), value.x, value.y, value.z));
+		m_StoredUniforms[uniform_name] = loc;
+		return loc;
 	}
-
-	void Shader::SetUniform4f(const std::string& name, const glm::vec4& value) {
-		GLCall(glUniform4f(GetCachedUniformLocation(name), value.x, value.y, value.z, value.w));
-	}
-
-	void Shader::SetUniformMat4(const std::string& name, const glm::mat4x4& value) {
-		GLCall(glUniformMatrix4fv(GetCachedUniformLocation(name), 1, GL_FALSE, glm::value_ptr(value)));
-	}
-
 }

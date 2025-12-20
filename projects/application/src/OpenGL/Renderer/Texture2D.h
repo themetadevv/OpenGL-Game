@@ -4,13 +4,13 @@
 
 namespace OpenGL {
 	enum class ImageFormat {
-		None = -1,
+		Unknown = -1,
 		PNG,
 		JPG
 	};
 
 	enum class TextureFormat {
-		None = -1,
+		Unknown = -1,
 		R,
 		RG,
 		RGB,
@@ -24,15 +24,22 @@ namespace OpenGL {
 		uint32_t Width;
 		uint32_t Height;
 
-		ImageFormat ImgFormat = ImageFormat::None;
-		TextureFormat TexFormat = TextureFormat::None;
+		ImageFormat ImgFormat;
+		TextureFormat TexFormat;
 	};
 
-	uint32_t TextureFormatToGLInternalFormat(TextureFormat texture_format);
-	uint32_t TextureFormatToGLDataFormat(TextureFormat texture_format);
+	inline static std::string GetImageExtensionStringFromImageFormat(ImageFormat img_fmt) {
+		switch (img_fmt) {
+			case OpenGL::ImageFormat::Unknown: return "Unsupported Format!"; break;
+			case OpenGL::ImageFormat::PNG: return ".png"; break;
+			case OpenGL::ImageFormat::JPG: return ".jpg"; break;
+		}
+	}
 
 	class Texture2D {
 	private:
+		// <------------------ Private Members ------------------>
+
 		TextureData m_TextureData;
 
 		uint32_t m_RendererID; // Texture/Renderer/Buffer ID
@@ -44,14 +51,24 @@ namespace OpenGL {
 		unsigned char* m_ImageBuffer;
 
 	public:
-		Texture2D(const std::string& texture_name, const std::string& texture_image_path);
+		// <------------------ Constructors/Deconstructor ------------------>
+
+		Texture2D(const std::string& texture_name, const std::string& texture_path);
 		Texture2D(const TextureData& texture_data);
 
-		const std::string GetName() const { return m_TextureData.Name; }
+	public:
+		// <------------------ Public Functions ------------------>
+
+		// <------------------ Setters ------------------>
+
+		// <------------------ Getters ------------------>
 
 		const uint32_t  GetTextureID() const { return m_RendererID; }
 		const uint32_t  GetWidth() const { return m_TextureData.Width; }
 		const uint32_t  GetHeight() const { return  m_TextureData.Height; }
+		const std::string GetName() const { return m_TextureData.Name; }
+
+		// <------------------ Functions ------------------>
 
 		void UploadTextureData(void* data, uint32_t size) const;
 		void OverrideBind(int texture_slot) const;

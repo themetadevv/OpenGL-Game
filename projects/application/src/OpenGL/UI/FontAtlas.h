@@ -50,7 +50,7 @@ namespace OpenGL {
 
 		std::pair<uint32_t, uint32_t> GetAtlasDimension() const { return m_AtlasDimension; }
 
-	public:
+	private:
 		// <------------------ Private Functions ------------------>
 
 		// ts made me cry, should not be called in a loop (this func is heavy asf)

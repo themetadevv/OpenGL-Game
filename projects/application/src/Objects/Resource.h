@@ -84,9 +84,6 @@ namespace Game {
 				
 				map.emplace(resource_name, std::move(resource));
 			}
-			else {
-				Log("Resource (Type : ", typeid(T).name(), ") -> ", resource_name, " Already exists!");
-			}		
 		}
 
 		template<typename T>
@@ -96,7 +93,7 @@ namespace Game {
 			if (it != map.end())
 				return it->second.get();
 
-			Log("Resource (Type : ", typeid(T).name(), ") -> ", resource_name, " Already exists!");
+			Log("Resource (Type : ", typeid(T).name(), ") -> ", resource_name, " doesnt exists!");
 			return nullptr;
 		}
 	};

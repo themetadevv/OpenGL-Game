@@ -16,13 +16,14 @@ namespace Core {
 		m_WindowPosition.first = 0;
 		m_WindowPosition.second = 0;
 
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 4);
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-		glfwWindowHint(GLFW_FOCUSED, false);
-
 		int glfw_init_status = glfwInit();
-		CORE_ASSERT(glfw_init_status, "Failed to Initialize GLFW!");
+		ASSERT(glfw_init_status, "Failed to Initialize GLFW!");
+
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+		glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
+		glfwWindowHint(GLFW_FOCUSED, false);
 
 		m_WindowHandle = glfwCreateWindow(
 			m_WindowSpecs.Size.first, m_WindowSpecs.Size.second,
@@ -36,7 +37,7 @@ namespace Core {
 		glfwGetWindowSize(m_WindowHandle, &m_WindowSpecs.Size.first, &m_WindowSpecs.Size.second);
 
 		m_PrimaryMonitorHandle = glfwGetPrimaryMonitor();
-		CORE_ASSERT(m_PrimaryMonitorHandle, "PrimaryMonitorHandle* is null");
+		ASSERT(m_PrimaryMonitorHandle, "PrimaryMonitorHandle* is null");
 
 		if (m_CurrentVideoMode != VideoMode::Windowed)
 			SetVideoMode(m_CurrentVideoMode);
@@ -44,7 +45,7 @@ namespace Core {
 		SetWindowState(m_CurrentWindowState);
 
 		int load_gl_loader_success = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
-		CORE_ASSERT(load_gl_loader_success, "Failed to load 'glad GL Loader'!");
+		ASSERT(load_gl_loader_success, "Failed to load 'glad GL Loader'!");
 
 		m_Initialized = true;
 	}

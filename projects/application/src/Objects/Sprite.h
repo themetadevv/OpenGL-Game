@@ -27,9 +27,9 @@ namespace Game {
 	public:
 		Sprite(const std::string& name);
 
-		bool SetShader(OpenGL::Shader* shader);
-		bool SetTexture(OpenGL::Texture2D* texture);
-		bool SetMesh(OpenGL::IMesh* mesh);
+		void SetShader(OpenGL::Shader* shader);
+		void SetTexture(OpenGL::Texture2D* texture);
+		void SetMesh(OpenGL::IMesh* mesh);
 
 		void SetSize(const Vector2& size);
 		void SetPosition(const Vector2& position);
@@ -53,12 +53,12 @@ namespace Game {
 		}
 
 		inline const OpenGL::Shader* GetBoundShader() const {
-			CORE_ASSERT(m_SpriteData.SpriteShader, ("No! Shader was Bound in Sprite -> " + m_SpriteData.Name + "\n").c_str());
+			ASSERT(m_SpriteData.SpriteShader, ("No! Shader was Bound in Sprite -> " + m_SpriteData.Name + "\n").c_str());
 			return m_SpriteData.SpriteShader;
 		}
 
 		inline const OpenGL::Texture2D* GetBoundTexture() const {
-			CORE_ASSERT(m_SpriteData.Texture, ("No! Texture was Bound in Sprite -> " + m_SpriteData.Name + "\n").c_str());
+			ASSERT(m_SpriteData.Texture, ("No! Texture was Bound in Sprite -> " + m_SpriteData.Name + "\n").c_str());
 			return m_SpriteData.Texture;
 		}
 

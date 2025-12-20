@@ -36,22 +36,22 @@ namespace Core {
 		static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
 			if (action == GetInputAction(InputAction::Press)) {
 				m_sKeyState[(KeyCode)key] = InputAction::Press;
-				Log("Key[", GetKeyCodeString((KeyCode)key), "] Down!");
+				//Log("Key[", GetKeyCodeString((KeyCode)key), "] Down!");
 			}
 			else if (action == GetInputAction(InputAction::Release)) {
 				m_sKeyState[(KeyCode)key] = InputAction::Release;
-				Log("Key[", GetKeyCodeString((KeyCode)key), "] Released!");
+				//Log("Key[", GetKeyCodeString((KeyCode)key), "] Released!");
 			}
 		}
 
 		static void MouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
 			if (action == GetInputAction(InputAction::Press)) {
 				m_sMouseButtonState[(MouseCode)button] = InputAction::Press;
-				Log("MouseButton[", GetMouseCodeString((MouseCode)button), "] Released!");
+				//Log("MouseButton[", GetMouseCodeString((MouseCode)button), "] Released!");
 			}
 			else if (action == GetInputAction(InputAction::Release)) {
 				m_sMouseButtonState[(MouseCode)button] = InputAction::Release;
-				Log("MouseButton[", GetMouseCodeString((MouseCode)button), "] Released!");
+				//Log("MouseButton[", GetMouseCodeString((MouseCode)button), "] Released!");
 			}
 		}
 
@@ -63,7 +63,7 @@ namespace Core {
 	public:
 		static void Init(GLFWwindow* window_handle) {
 			m_sWindowHandle = window_handle;
-			CORE_ASSERT(m_sWindowHandle, "Window Handle is null\n");
+			ASSERT(m_sWindowHandle, "Window Handle is null\n");
 
 			for (int key = 0; key <= GLFW_KEY_LAST; key++)
 				m_sKeyState[(KeyCode)key] = InputAction::None;

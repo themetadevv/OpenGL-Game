@@ -10,34 +10,46 @@ namespace Game {
 		m_SpriteData.Name = name;
 	}
 
-	bool Sprite::SetShader(OpenGL::Shader* shader) {
-		if (m_SpriteData.SpriteShader != shader) {
-			m_SpriteData.SpriteShader = shader;
-			return true;
-		}
-		
-		Log("Same Shader was Set Again!");
-		return false;
+	void Sprite::SetShader(OpenGL::Shader* shader) {
+		LOG_ASSERT(shader != nullptr, std::format(
+			"Sprite::SetShader called with null shader! sprite name -> {} ", m_SpriteData.Name
+		));
+
+		if (shader == nullptr)
+			return;
+
+		if (m_SpriteData.SpriteShader == shader)
+			return;
+
+		m_SpriteData.SpriteShader = shader;
 	}
 
-	bool Sprite::SetTexture(OpenGL::Texture2D* texture) {
-		if (m_SpriteData.Texture != texture) {
-			m_SpriteData.Texture = texture;
-			return true;
-		}
+	void Sprite::SetTexture(OpenGL::Texture2D* texture) {
+		LOG_ASSERT(texture != nullptr, std::format(
+			"Sprite::SetTexture called with null texture! sprite name -> {} ", m_SpriteData.Name
+		));
 
-		Log("Same Texture was Set Again!");
-		return false;
+		if (texture == nullptr)
+			return;
+
+		if (m_SpriteData.Texture == texture)
+			return;
+
+		m_SpriteData.Texture = texture;
 	}
 
-	bool Sprite::SetMesh(OpenGL::IMesh* mesh) {
-		if (m_SpriteData.Mesh != mesh) {
-			m_SpriteData.Mesh = mesh;
-			return true;
-		}
+	void Sprite::SetMesh(OpenGL::IMesh* mesh) {
+		LOG_ASSERT(mesh != nullptr, std::format(
+			"Sprite::SetMesh called with null mesh! sprite name -> {} ", m_SpriteData.Name
+		));
 
-		Log("Same Mesh was Set Again!");
-		return false;
+		if (mesh == nullptr)
+			return;
+
+		if (m_SpriteData.Mesh == mesh)
+			return;
+
+		m_SpriteData.Mesh = mesh;
 	}
 
 	void Sprite::SetSize(const Vector2& size) {
@@ -61,15 +73,15 @@ namespace Game {
 		
 		bool texture_attached = (m_SpriteData.Texture != nullptr);
 
-		m_SpriteData.SpriteShader->SetUniform1i(ShaderConst::UTEX_ATTACHED, texture_attached);
-		m_SpriteData.SpriteShader->SetUniform4f(ShaderConst::UCOLOR, { m_SpriteData.SpriteColor.R, m_SpriteData.SpriteColor.G, m_SpriteData.SpriteColor.B, m_SpriteData.SpriteColor.A });
+		m_SpriteData.SpriteShader->SetUniform<int>(ShaderConst::UTEX_ATTACHED, texture_attached);
+		m_SpriteData.SpriteShader->SetUniform<Vector4>(ShaderConst::UCOLOR, { m_SpriteData.SpriteColor.R, m_SpriteData.SpriteColor.G, m_SpriteData.SpriteColor.B, m_SpriteData.SpriteColor.A });
 
 		Mat4 u_MVP = r->GetProjectionMatrix() * r->GetViewMatrix() * m_SpriteData.Transform.GetModelMatrix();
-		m_SpriteData.SpriteShader->SetUniformMat4(ShaderConst::UMVP, u_MVP);
+		m_SpriteData.SpriteShader->SetUniform<Mat4>(ShaderConst::UMVP, u_MVP);
 
 		if (m_SpriteData.Texture != nullptr) {
 			m_SpriteData.Texture->OverrideBind(0);
-			m_SpriteData.SpriteShader->SetUniform1i(ShaderConst::UTEX, 0);
+			m_SpriteData.SpriteShader->SetUniform<int>(ShaderConst::UTEX, 0);
 		}
 
 		if (m_SpriteData.Mesh->GetMeshType() == OpenGL::MeshType::Quad) {

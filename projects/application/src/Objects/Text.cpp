@@ -33,35 +33,40 @@ namespace OpenGL::Objects::UI {
 	}
 
 	void TextRenderer::SetFontAtlas(FontAtlas* font_atlas) {
+		LOG_ASSERT(font_atlas != nullptr, "TextRenderer::SetFontAtlas called with null font atlas!");
+
+		if (font_atlas == nullptr)
+			return;
+
 		if (m_TextRendererData.TextFontAtlas == font_atlas)
 			return;
 
 		m_TextRendererData.TextFontAtlas = font_atlas;
 	}
 
-	bool TextRenderer::SetShader(Shader* shader) {
-		if (m_TextRendererData.TextShader != shader) {
-			if (shader == nullptr) {
-				Log("Shader* Set was null! shader name : ");
-				return false;
-			}
-			
-			m_TextRendererData.TextShader = shader;
-		}
+	void TextRenderer::SetShader(Shader* shader) {
+		LOG_ASSERT(shader != nullptr, "TextRenderer::SetShader called with null shader!");
 
-		return true;
+		if (shader == nullptr)
+			return;
+
+		if (m_TextRendererData.TextShader == shader)
+			return;
+
+		m_TextRendererData.TextShader = shader;
 	}
 
 	bool TextRenderer::DrawText(const std::string& text, std::pair<float , float> position, float scale, const Color& text_color) {
-		if (m_TextRendererData.TextShader == nullptr) {
-			Log("Text Shader* is null");
+		if (m_TextRendererData.TextShader == nullptr)
 			return false;
-		}
+
+		if (m_TextRendererData.TextFontAtlas == nullptr)
+			return false;
 
 		m_TextRendererData.TextShader->Bind();
-		m_TextRendererData.TextShader->SetUniform4f(ShaderConst::UCOLOR, { text_color.R, text_color.G, text_color.B, text_color.A });
-		m_TextRendererData.TextShader->SetUniformMat4("u_Projection", m_Renderer->GetProjectionMatrix());
-		m_TextRendererData.TextShader->SetUniform1i("text", 0);
+		m_TextRendererData.TextShader->SetUniform<Vector4>(ShaderConst::UCOLOR, { text_color.R, text_color.G, text_color.B, text_color.A });
+		m_TextRendererData.TextShader->SetUniform<Mat4>("u_Projection", m_Renderer->GetProjectionMatrix());
+		m_TextRendererData.TextShader->SetUniform<int>("text", 0);
 
 		std::vector<TextVertex> text_vertices;
 		for (unsigned char c : text) {
@@ -97,7 +102,4 @@ namespace OpenGL::Objects::UI {
 		m_TextRendererData.TextShader->Unbind();
 		return true;
 	}
-
-
-
 }

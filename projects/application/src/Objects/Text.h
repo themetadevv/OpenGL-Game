@@ -25,7 +25,7 @@ namespace OpenGL::Objects::UI {
 		~TextRenderer();
 
 		void SetFontAtlas(FontAtlas* font_atlas);
-		bool SetShader(Shader* shader);
+		void SetShader(Shader* shader);
 
 		bool DrawText(const std::string& text = "SampleText", std::pair<float, float> position = {1.0f, 1.0f}, float scale = 1.0f, const Color& text_color = Color());
 	};

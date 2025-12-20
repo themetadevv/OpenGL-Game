@@ -7,6 +7,8 @@
 #include "OpenGL/OpenGL_Core.h"
 #include "OpenGL/Maths.h"
 
+#include "Core/Console.h"
+
 #include "Renderer.h"
 
 namespace OpenGL {
@@ -21,6 +23,8 @@ namespace OpenGL {
 	void Renderer::Initialize() {
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+		SetConsoleStyle(ConsoleTextStyle::Red | ConsoleTextStyle::Underline | ConsoleTextStyle::Bold);
 
 		std::cout << "Renderer Initialized ->\n";
 		std::cout << "Vendor:   " << glGetString(GL_VENDOR) << "\n";

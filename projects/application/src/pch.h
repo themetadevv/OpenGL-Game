@@ -17,3 +17,7 @@
 #include <chrono>
 #include <filesystem>
 #include <type_traits>
+
+#ifdef PLATFORM_WINDOWS
+#include <windows.h>
+#endif

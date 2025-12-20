@@ -1,0 +1,27 @@
+#version 330 core
+
+out vec4 FragColor;
+
+in vec2 v_TexCoords;
+
+uniform bool u_TextureAttached;
+uniform sampler2D u_Texture;
+uniform vec4 u_Color;
+
+vec4 GetColor() {
+	vec4 color = vec4(1.0); // default white
+
+	if (u_Color != vec4(0.0) && !u_TextureAttached) { // HAS Color and NO! Texture
+		color = u_Color; // uniform color
+	}else if (u_Color == vec4(0.0) && u_TextureAttached ) { // does NOT! have Color and HAS Texture
+		color = texture(u_Texture, v_TexCoords); // uniform texture
+	}else if (u_Color != vec4(0.0) && u_TextureAttached) { // HAS Color and HAS Texture
+		color = texture(u_Texture, v_TexCoords) * u_Color; // uniform color + texture
+	}
+
+	return color;
+}
+
+void main() {
+	FragColor = GetColor();
+}

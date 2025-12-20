@@ -14,7 +14,7 @@ namespace Core {
 	public:
 		static void Init() {
 			m_LastTime = glfwGetTime();
-			CORE_ASSERT(m_LastTime, "Get Time Failed! Did you Created GLFWwindow Context ?");
+			ASSERT(m_LastTime, "Get Time Failed! Did you Created GLFWwindow Context ?");
 		}
 
 		static void Update() {

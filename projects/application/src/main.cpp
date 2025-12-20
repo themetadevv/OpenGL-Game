@@ -38,7 +38,7 @@ int main() {
 	Specs.Size.first = 1600;
 	Specs.Size.second = 900;
 	Specs.VidMode = Core::VideoMode::Windowed;
-	Specs.WinState = Core::WindowState::Maximized;
+	Specs.WinState = Core::WindowState::InputFocused;
 	Specs.VSync = true;
 
 	Core::Window* window = new Core::Window(Specs);
@@ -63,9 +63,10 @@ int main() {
 	IMesh* quad_mesh = new Mesh::Quad();
 	IMesh* tri_mesh = new Mesh::Triangle();
 
+	//Shader* mesh_shader = new Shader("MeshShader.GLSL", "assets/MeshShader.GLSL");
 	Shader* mesh_shader = new Shader("MeshShader.GLSL", "assets/MeshShader.GLSL");
 
-	Texture2D* bird_texture = new Texture2D("BirdTexture", "assets/bird.png");
+	Texture2D* bird_texture = new Texture2D("BirdSprite", "assets/bird.png");
 	Game::Sprite* bird_sprite = new Game::Sprite("Bird");
 
 	Mat4 view_matrix(1.0f);
@@ -150,7 +151,7 @@ int main() {
 		text_renderer->DrawText("Delta Time : " + std::to_string(Core::Time::GetDeltaTime()), { 100.0f, 550.0f }, 1.0f, Color(0, 0, 100));
 		text_renderer->DrawText("Video Mode : " + window->GetCurrentVideoModeString(), {100.0f, 600.0f}, 1.0f, Color(0, 255, 0));
 
-		text_renderer->SetFontAtlas(roboto_font_atlas);
+		//text_renderer->SetFontAtlas(roboto_font_atlas);
 		text_renderer->DrawText("Space to flap", {100.0f, 400.0f}, 1.0f, Color(0, 255, 0, alpha));
 
 		birdVelocity += gravity * Core::Time::GetDeltaTime();

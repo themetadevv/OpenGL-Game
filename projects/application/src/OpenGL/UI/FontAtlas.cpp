@@ -6,6 +6,8 @@
 #include "OpenGL/Renderer/Texture2D.h"
 #include "OpenGL/Maths.h"
 
+#include "OpenGL/OpenGL_Utils.h"
+
 #include <stb_image/stb_image_write.h>
 
 #include "FontAtlas.h"
@@ -125,6 +127,7 @@ namespace OpenGL {
 
 			m_CharactersData[c] = character_data;
 			
+			// forwading pen position
 			pen_x += bm.width + atlas_character_padding;
 		}
 
@@ -132,7 +135,7 @@ namespace OpenGL {
 
 		// creating a image with the font atlas data for debug purpose
 
-		stbi_write_png(std::string("assets/" + m_Font->GetFontName() + ".png").c_str(),
+		stbi_write_png(std::string("assets/generated/font atlases/" + m_Font->GetFontName() + ".png").c_str(),
 			m_AtlasDimension.first,
 			m_AtlasDimension.second, 1,                
 			final_atlas_data.data(),
@@ -140,18 +143,20 @@ namespace OpenGL {
 
 #endif
 
-		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+		Utils::UnPackBytesAlignment(1);
 
 		OpenGL::TextureData glyph_tex_data;
 		glyph_tex_data.Name = "GlyphTex";
 		glyph_tex_data.Path = "";
 		glyph_tex_data.Width = m_AtlasDimension.first;
 		glyph_tex_data.Height = m_AtlasDimension.second;
-		glyph_tex_data.ImgFormat = ImageFormat::None;
+		glyph_tex_data.ImgFormat = ImageFormat::Unknown;
 		glyph_tex_data.TexFormat = TextureFormat::R;
 
 		m_CharactersTexture =  unique(OpenGL::Texture2D, glyph_tex_data);
 		m_CharactersTexture->UploadTextureData(final_atlas_data.data(), final_atlas_data.size());
+
+		Utils::UnPackBytesAlignment(DEFAULT_UNPACK_ALIGNMENT);
 	}
 
 }

@@ -20,13 +20,17 @@ namespace Core {
 
 	bool Font::LoadFont() {
 		if (FT_New_Face(FreeTypeLibrary::GetLibrary(), m_FontSpecification.Path.c_str(), m_FontSpecification.FaceIndex, &m_Face)) {
-			Log("Failed to create font face! font name : ", m_FontSpecification.Name);
+			LOG_ASSERT(0, std::format(
+				"Failed to create font face! font name : {} ", m_FontSpecification.Name
+			));
 			return false;
 		}
 			
 
 		if (FT_Set_Pixel_Sizes(m_Face, 0, m_FontSpecification.Size)) {
-			Log("Failed to set font size! font name : ", m_FontSpecification.Name);
+			LOG_ASSERT(0, std::format(
+				"Failed to set font size! font name : {} ", m_FontSpecification.Name
+			));
 			return false;
 		}
 
@@ -37,7 +41,9 @@ namespace Core {
 
 	bool Font::LoadCharacter(unsigned char c) {
 		if (FT_Load_Char(m_Face, c, FT_LOAD_RENDER)) {
-			Log("Failed to set load char");
+			LOG_ASSERT(0, std::format(
+				"Failed to load char : ", c
+			));
 			return false;
 		}
 

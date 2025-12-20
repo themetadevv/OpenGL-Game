@@ -9,51 +9,102 @@ namespace ShaderConst {
 	constexpr char UTEX_ATTACHED[] = "u_TextureAttached";
 }
 
-namespace OpenGL {
-	enum struct ShaderType {
-		NONE = -1,
-		VERTEX, FRAGMENT
-	};
+// basic shader class impl
 
+namespace OpenGL {
 	struct ShaderData {
 		std::string Name;
+		std::string Path;
 		std::string VertexShaderSource;
 		std::string FragmentShaderSource;
 	};
-	
+
 	class Shader {
 	private:
-		unsigned int m_RendererID;
-		ShaderData m_ShaderData;
-		std::unordered_map<std::string, int> m_UniformCache;
+		// <------------------ Private Members ------------------>
 
+		enum class UniformType {
+			None = -1,
+			Float,
+			Mat4,
+			Vector2,
+			Vector3,
+			Vector4,
+		};
+
+		uint32_t m_RendererID;
+		ShaderData m_ShaderData;
+
+		bool m_ShaderLoaded;
 		bool m_ShaderBound;
 
-		const bool ParseShader(const std::string& shader_name, const std::string& shader_path);
-		const bool CompileShader();
-		const int GetCachedUniformLocation(const std::string& uniform_name);
+		std::unordered_map<std::string, int> m_StoredUniforms;
+
+		template <typename T>
+		using Uniform= std::conditional_t<std::is_arithmetic_v<T>, T, const T&>;
 
 	public:
+		// <------------------ Constructors/Deconstructor ------------------>
 
-		Shader(const std::string& shader_name, const std::string& shader_path);
+		Shader(RoString shader_name, RoString shader_src_path);
+		Shader(RoString shader_name, RoString vertex_shader_src_path, RoString fragment_shader_src_path);
+
 		~Shader();
 
-		const ShaderData& GetShaderData() const {
-			return m_ShaderData;
-		}
+	private:
+		// <------------------ Private Functions ------------------>
 
-		bool IsShaderBound() const { return m_ShaderBound; }
+		bool CompileShader();
+
+	public:
+		// <------------------ Public Functions ------------------>
 
 		void Bind();
 		void Unbind();
 
-		void SetUniform1i(const std::string& name, int value);
-		void SetUniform1f(const std::string& name, float value);
-		void SetUniform2f(const std::string& name, const glm::vec2& value);
-		void SetUniform3f(const std::string& name, const glm::vec3& value);
-		void SetUniform4f(const std::string& name, const glm::vec4& value);
-		void SetUniformMat4(const std::string& name, const glm::mat4x4& value);
+		// <------------------ Getters ------------------>
 
+		RoString GetShaderName() const { return m_ShaderData.Name; }
+		RoString GetVertexShaderSource() const { return m_ShaderData.VertexShaderSource; }
+		RoString GetFragmentShaderSource() const { return m_ShaderData.FragmentShaderSource; }
 
+		bool ShaderBound() const { return m_ShaderBound; }
+
+		int GetCachedUniformLocation(const std::string& uniform_name);
+
+		// <------------------ Setters ------------------>
+
+		template <typename T>
+		void SetUniform(const std::string& uniform_name, Uniform<T> value) {
+			int loc = GetCachedUniformLocation(uniform_name);
+
+			if constexpr (std::is_same_v<T, int>) {
+				GLCall(glUniform1i(loc, value));
+			}
+
+			else if constexpr (std::is_same_v<T, float>) {
+				GLCall(glUniform1f(loc, value));
+			}
+				
+			else if constexpr (std::is_same_v<T, Vector2>) {
+				GLCall(glUniform2f(loc, value.x, value.y));
+			}
+				
+			else if constexpr (std::is_same_v<T, Vector3>) {
+				GLCall(glUniform3f(loc, value.x, value.y, value.z));
+			}
+				
+			else if constexpr (std::is_same_v<T, Vector4>) {
+				GLCall(glUniform4f(loc, value.x, value.y, value.z, value.w));
+			}
+				
+			else if constexpr (std::is_same_v<T, Mat4>) {
+				GLCall(glUniformMatrix4fv(loc, 1, GL_FALSE, glm::value_ptr(value)));
+			}
+				
+			else {
+				static_assert(false, "Unsupported  uniform type!");
+			}				
+		}
 	};
 }
